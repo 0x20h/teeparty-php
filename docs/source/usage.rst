@@ -30,7 +30,7 @@ Defining a Filter
 Starting a Worker
 =================
 
-In order to execute a Filter, start a worker instance:
+In order to execute a filter, start a worker instance:
 
 .. code-block:: sh
    
@@ -44,18 +44,22 @@ Triggering a Filter
    
     <?php
 
-    $args =  [
-        'to' => 'foo@example.org',
+    use Teeparty\Teeparty;
+    use Teeparty\Client\PhpRedis;
+
+    $tee = new Teeparty(new PhpRedis, []);
+    $context =  new Context([
+        'to' => 'foo@localhost',
         'subject' => 'test',
         'message' => 'test message',
-    ];
+    ]);
 
-    $token = Teeparty::pipe(['App\Mail\Mailer'], $args);
+    $token = $tee->pipe(new App\Mail\Mailer, $context, ['num_workers' => 2]);
 
     // ...
-    // do other work
+    // do other work or return token
 
     // optional: 
     // block for result
-    echo Teeparty::join($token); // echoes "Mail sent!"
+    echo $tee->join($token); // echoes "Mail sent!"
 

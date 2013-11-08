@@ -7,13 +7,16 @@ Welcome to Teeparty's documentation!
 ==================================
 
 Teeparty is a special implementation of the `Pipes and Filter`_ pattern with
-multiple in- and outputs. 
+multiple in- and outputs. In this model you pipe data to `Filter`\s that mangle
+input and produce output. You can connect several `Filter`\s via `Pipe`\s in
+order to allow complex processing. Each computation is a `Job` that can be
+monitored, paused or aborted using a supervisor.
 
-It consists with 3 components:
+The system is built upon 3 components:
 
-1. A process supervisor and service bus implementation written in `node.js`_ and 
-2. A PHP library for defining and triggering computations.
-3. `redis`_ for communication.
+1. A process supervisor and service bus implementation written in `node.js`_
+2. (For now) a PHP library for defining and triggering `Job`\s.
+3. `redis`_ as a backend database for temporary data storage and messaging.
 
 Contents:
 
@@ -21,8 +24,10 @@ Contents:
     :maxdepth: 2
     :numbered:
 
+    introduction
     install
     usage
+    examples
 
     
        
