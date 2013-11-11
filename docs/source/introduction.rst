@@ -4,45 +4,77 @@
 Introduction
 ************
 
-Teeparty is a framework for asychronous processing of :ref:`intro_stream`\s. 
-`Stream`\s consist of (typed) `Message`\s that are processed by `Filter`\s.
-`Filter` can emit or receive multiple `Stream`\s.
+Teeparty [ti:pɑ:rt̬i] is a (asychronous) pipeline processing framework for PHP.
 
+:ref:`intro_pipelines` consist of a set of :ref:`intro_filters` that process
+:ref:`intro_messages` that are passed around through :ref:`intro_channels`.
+ 
 .. figure:: resources/architecture.png
 
     Abstract view of the *teeparty* processing model. 
 
-    Input data is piped to a `Filter`. The output of a `Filter` is piped
-    to other `Filter`\s. A Filter can also `join` several outputs from preceding
-    `Filter`\s.
+    :ref:`intro_messages` are passed through :ref:`intro_channels` to
+    different :ref:`intro_filters`. 
 
+   
+.. code-block:: php
 
-.. _intro_stream:
+    <?php
+    use Teeparty\Filter;
+    use Teeparty\Channel;
+    use Teeparty\Pipeline;
+    use Teeparty\Client\Redis;
+    use Teeparty\Schema\V1\NumberSchema;
 
-Stream
-======
+    $pipeline = new Pipeline([
+        'A' => new FilterA,
+        'C' => new FilterC,
+    ], new Redis);
+    
+    $pipeline
+        ->from(/*Pipeline::STDIN*/)->to(['A'])
+        ->from('A')->to(['C'], new Channel('foo', ['workers' => 1]))
+        ->from('C')->to(Pipeline::STDOUT);
+    
+    foreach($work as $item) {
+        // 'A' accepts NumberSchema
+        $message = new Message(new NumberSchema(), $item);
+        $pipeline->write($message);
+    }
 
-InputStream
-^^^^^^^^^^^
+    while ($result = $pipeline->read(Pipeline::STDOUT) !== null) {
+        echo $result;
+    }
 
-OutputStream
-^^^^^^^^^^^^
+.. _intro_messages:
 
-.. _intro_message:
-
-Message
+Messages
 ========
+
+Messages wrap data items in a way that it can be transported from one Filter to
+another. Messages may be typed, so that receiving Filters can understand the
+meaning of a certain message.
 
 Schema
 ^^^^^^
 
-.. _intro_filter:
 
-Filter
-======
+.. _intro_channels:
 
+Channels
+========
 
-Mapper
-======
+Channels transport Messages from one Filter to the next. There are different
+types of channels.
 
+.. _intro_filters:
 
+Filters
+=======
+
+.. _intro_pipelines:
+
+Pipelines
+=========
+
+Connect Filters to parallelize computations.
