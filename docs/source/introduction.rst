@@ -32,9 +32,9 @@ Teeparty [ti:pɑ:rt̬i] is a (asychronous) pipeline processing framework for PHP
     ], new Redis);
     
     $pipeline
-        ->from(/*Pipeline::STDIN*/)->to(['A'])
-        ->from('A')->to(['C'], new Channel('foo', ['workers' => 1]))
-        ->from('C')->to(Pipeline::STDOUT);
+        ->connect(Pipeline::STDIN, ['A'])
+        ->connect('A', ['C'], new Channel('foo', ['workers' => 1]))
+        ->connect('C', Pipeline::STDOUT);
     
     foreach($work as $item) {
         // 'A' accepts NumberSchema
