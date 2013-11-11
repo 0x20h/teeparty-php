@@ -60,6 +60,9 @@ meaning of a certain message.
 Schema
 ^^^^^^
 
+Every `Message` is bound to a Schema. A schema describes the data structure that
+is enveloped.
+
 .. _intro_channels:
 
 Channels
@@ -93,7 +96,7 @@ Simple asyncronous execution
 
 Delivering heavy work to a background process is a common task. For this special
 case there is a factory method to create a pipeline that delivers data to a
-single Filter:
+single Filter in a fire and forget fashion:
 
 .. code-block:: php
     :linenos:
