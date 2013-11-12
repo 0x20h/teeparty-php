@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "5ac5029788349575cd4f75c33f3b5a9d",
+    "hash": "17e67e1c2b940a55e8ab2141562dfd94",
     "packages": [
         {
             "name": "justinrainbow/json-schema",

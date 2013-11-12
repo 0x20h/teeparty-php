@@ -20,6 +20,6 @@
 	"suggests": {
 	},
 	"autoload": {
-		"psr-0": {"Turtur": "src/"}
+		"psr-0": {"Teeparty": "src/"}
 	}
 }

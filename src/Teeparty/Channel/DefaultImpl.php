@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the teeparty library.
  *
@@ -22,9 +21,19 @@
  * SOFTWARE.
  */
 
-namespace Teeparty;
+namespace Teeparty\Channel;
 
-interface Channel {
+use Teeparty\Channel;
 
-    public function getName();
+class DefaultImpl implements Channel {
+    
+    private $name;
+
+    public function __construct() {
+        $this->name = sha1(uniqid(true));
+    }
+
+    public function getName() {
+        return $this->name;
+    }
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the teeparty library.
  *
@@ -21,10 +20,12 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
  * SOFTWARE.
  */
+namespace Teeparty\Channel;
 
-namespace Teeparty;
+Class DefaultImplTest extends \PHPUnit_Framework_TestCase {
 
-interface Channel {
-
-    public function getName();
+    public function testName() {
+        $c = new DefaultImpl;
+        var_dump($c);
+    }
 }

@@ -1,7 +1,6 @@
 <?php
-
 /**
- * This file is part of the teeparty library.
+ * This file is part of the teeparty package.
  *
  * Copyright (c) 2013 Jan Kohlhof
  *
@@ -21,10 +20,4 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
  * SOFTWARE.
  */
-
-namespace Teeparty;
-
-interface Channel {
-
-    public function getName();
-}
+require dirname(__DIR__) . '/vendor/autoload.php';
