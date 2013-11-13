@@ -14,14 +14,14 @@ class PHPRedis implements Queue {
         $this->client = $client;
 
         if (!$this->client->isConnected()) {
-            throw new \LogicException('\Redis client is not connected!');
+            throw new \RuntimeException('\Redis client is not connected!');
         }
     }
 
-    public function pop(array $channels = array(), $timeout = 0)
+    public function pop(array $channels, $timeout = 0)
     {
         $item = $this->client->brpop($channels, $timeout);
-
+        return $item[1];
     }
 
     public function push(Message $message, $channel)
