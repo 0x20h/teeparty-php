@@ -20,12 +20,24 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
  * SOFTWARE.
  */
-namespace Teeparty\Channel;
+namespace Teeparty;
 
-Class DefaultImplTest extends \PHPUnit_Framework_TestCase {
+use Teeparty\Channel;
+
+Class ChannelTest extends \PHPUnit_Framework_TestCase {
 
     public function testName() {
-        $c = new DefaultImpl;
-        var_dump($c);
+        $c1 = new Channel;
+        $c2 = new Channel;
+
+        $this->assertEquals($c1, $c2);
+        $this->assertEquals($c1->name(), $c2->name());
+    }
+
+
+    public function testJsonUnserialize() {
+        $c1 = new Channel;
+        $c2 = Channel::jsonUnserialize(json_encode($c1));
+        $this->assertEquals($c1->name(), $c2->name());
     }
 }

@@ -26,11 +26,24 @@ namespace Teeparty;
 
 class Pipeline {
 
+    private $filters = array();
+    private $connections = array();
+    private $queue;
+
+
     /**
      * @param Filter[] $filter Filters for this pipe
      * @param Queue $queue 
      */
     public function __construct(array $filters, Queue $q)
+    {
+        foreach ($filters as $key => $filter) {
+            $this->addFilter($key, $filter);
+        }
+    }
+
+
+    public function connect($filter, array $filters, $channel = 'default')
     {
     }
 }

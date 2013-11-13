@@ -1,0 +1,5 @@
+queue: 
+    class: \Teeparty\Queue\Redis
+    parameters: 
+        host: localhost
+        port: 6379
