@@ -1,17 +1,20 @@
 <?php
 
 namespace Teeparty\Console;
-
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Teeparty\Client\PHPRedis;
 
 
 class Worker extends Command {
+
+    private $container;
 
     protected function configure()
     {
@@ -37,22 +40,24 @@ class Worker extends Command {
 
         try {
             $file = $input->getArgument('CONFIG_FILE');
-            $config = Yaml::parse(file_get_contents($file));
-            $redis = new $config['queue']['class']($config['queue']['options']);
+            $this->container = new ContainerBuilder();
+            $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
+            $loader->load(basename($file));
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);
         }
 
-        $this->loop($redis);
+        $this->loop();
     }
 
-    private function loop(Client $client)
+    private function loop()
     {
-        $active = true;
+        $queue = $this->container->get('queue');
+        $channels = ['foo', 'bar'];
 
-        while($active) {
-            
+        while($item = $queue->pop($channels)) {
+            var_dump($item);
         }
     }
 }
