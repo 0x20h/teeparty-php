@@ -56,8 +56,8 @@ class Worker extends Command {
         $queue = $this->container->get('queue');
         $channels = ['foo', 'bar'];
 
-        while($item = $queue->pop($channels)) {
-            var_dump($item);
+        while($task = $queue->pop($channels)) {
+            var_dump($task);
         }
     }
 }

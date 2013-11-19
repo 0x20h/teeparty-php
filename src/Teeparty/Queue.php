@@ -22,7 +22,7 @@ interface Queue {
      * @param string $channel put task into the given channel.
      * 
      * @return void
-     * @throws QueueException If the Task could not be pushed.
+     * @throws Queue\Exception If the Task could not be pushed.
      */
     public function push(Task $task, $channel);
 }

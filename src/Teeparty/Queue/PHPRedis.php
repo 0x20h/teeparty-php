@@ -3,7 +3,7 @@
 namespace Teeparty\Queue;
 
 use Teeparty\Queue;
-use Teeparty\Message;
+use Teeparty\Task;
 
 class PHPRedis implements Queue {
 
@@ -24,7 +24,7 @@ class PHPRedis implements Queue {
         return $item[1];
     }
 
-    public function push(Message $message, $channel)
+    public function push(Task $task, $channel)
     {
     }
 }
