@@ -3,16 +3,17 @@ namespace Teeparty;
 
 use Teeparty\Task\Context;
 use Teeparty\Task\Worker;
+use Teeparty\Task\Exception;
 
 class Task implements \Serializable, \JsonSerializable {
 
     private $worker;
     private $context;
 
-    public function __construct(Worker $worker, Context $context)
+    public function __construct(Worker $worker, Context $context = null)
     {
         $this->worker = $worker;
-        $this->context = $context;
+        $this->context = $context ? $context : new Context(array());
     }
 
     public function serialize()

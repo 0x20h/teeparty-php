@@ -41,10 +41,25 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-    * @expectedException
+     * Test that creating a task with a non-existant class throws an exception.
+     *
+     * @expectedException Teeparty\Task\Exception
+     * @expectedExceptionMessage unknown class: \Foo
+     */
+    public function testCreateUnknownWorkerType()
+    {
+        Task::create('\Foo');        
+    }
+
+
+    /**
+     * Test that creating a task with an invalid class throws an exception.
+     *
+     * @expectedException Teeparty\Task\Exception
+     * @expectedExceptionMessage \Teeparty\Task\Context must implement \Teep
      */
     public function testCreateInvalidWorkerType()
     {
-        
+        Task::create('\Teeparty\Task\Context');        
     }
 }

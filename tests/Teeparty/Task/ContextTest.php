@@ -28,6 +28,14 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
     {
     }
 
+
+    public function testEmptyConstruct() {
+        $c = new Context;
+        $this->assertSame(null, $c['foo']);
+        $this->assertEquals(json_encode($c), json_encode(array()));
+    }
+
+
     public function testReadAccess()
     {
         $x = array(

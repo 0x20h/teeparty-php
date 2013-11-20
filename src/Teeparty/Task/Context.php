@@ -8,7 +8,7 @@ class Context implements \ArrayAccess, \Serializable, \JsonSerializable {
 
     private $data;
 
-    public function __construct(array $data)
+    public function __construct(array $data = array())
     {
         $this->validate($data);
         $this->data = $data;
