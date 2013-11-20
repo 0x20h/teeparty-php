@@ -20,24 +20,32 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
  * SOFTWARE.
  */
-namespace Teeparty;
+namespace Teeparty\Task;
 
-use Teeparty\Task\Worker;
-use Teeparty\Task\Context;
-use Teeparty\Task\Factory;
+use Teeparty\Task;
 
-Class TaskTest extends \PHPUnit_Framework_TestCase {
+class FactoryTest extends \PHPUnit_Framework_TestCase {
 
-    public function setUp()
+    /**
+     * Test that creating a task with a non-existant class throws an exception.
+     *
+     * @expectedException Teeparty\Task\Exception
+     * @expectedExceptionMessage unknown class: \Foo
+     */
+    public function testCreateUnknownWorkerType()
     {
+        Factory::create('\Foo');        
     }
 
-    public function testSerialization()
+
+    /**
+     * Test that creating a task with an invalid class throws an exception.
+     *
+     * @expectedException Teeparty\Task\Exception
+     * @expectedExceptionMessage \Teeparty\Task\Context must implement \Teep
+     */
+    public function testCreateInvalidWorkerType()
     {
-        $worker = $this->getMock('\Teeparty\Task\Worker');
-        $t = new Task($worker, new Context(array('foo' => 'bar')));
-        $msg = json_decode(json_encode($t), true);
-        $t2 = Factory::create($msg['worker'], $msg['context']);
-        $this->assertEquals($t, $t2);
+        Factory::create('\Teeparty\Task\Context');        
     }
 }

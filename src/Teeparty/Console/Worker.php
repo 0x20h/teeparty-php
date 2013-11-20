@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class Worker extends Command {
 
     private $container;
+    private $active = true;
 
     protected function configure()
     {
@@ -54,10 +55,20 @@ class Worker extends Command {
     private function loop()
     {
         $queue = $this->container->get('queue');
-        $channels = ['foo', 'bar'];
+        $channels = $this->container->getParameter('channels');
+        $timeout = $this->container->getParameter('timeout');
+        $log = $this->container->get('log');
+        $log->debug('Listening on channels: ' . implode(',', $channels));
 
-        while(list($channel, $message) = $queue->pop($channels)) {
-            var_dump($task);
+        while($this->active) {
+            $task = $queue->pop($channels, $timeout);
+
+            if (empty($task)) {
+                $log->debug('timeout, idling...');
+                continue;
+            }
+
+            $log->debug('Task: ', $task);
         }
     }
 }

@@ -1,8 +1,31 @@
 parameters:
     redis.host: localhost
     redis.port: 6379
+    channels:
+        - foo
+        - bar
+    timeout: 3
 
-services: 
+services:
+    monolog.formatter.line:
+        class: \Monolog\Formatter\LineFormatter
+        arguments:
+            format: "[%%datetime%%] %%extra.uid%%.%%level_name%%: %%message%% %%context%%\n"
+    monolog.handler.file:
+        class: \Monolog\Handler\RotatingFileHandler
+        arguments:
+            filename: logs/debug.log
+            maxFiles: 3
+    monolog.handler.stdout:
+        class: \Monolog\Handler\StreamHandler
+        calls:
+            - [setFormatter, [@monolog.formatter.line]]
+        arguments:
+            stream: php://stdout
+    monolog.processor.uid:
+        class: \Monolog\Processor\UidProcessor
+
+
     client:
         class: \Redis
         calls:
@@ -11,3 +34,11 @@ services:
         class: \Teeparty\Queue\PHPRedis
         arguments: 
             client: @client
+    log:
+        class: \Monolog\Logger
+        arguments:
+            name: worker
+            handlers: 
+                - @monolog.handler.stdout
+            processors:
+                - @monolog.processor.uid
