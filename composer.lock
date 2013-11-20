@@ -74,7 +74,7 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.3.6",
+            "version": "v2.3.7",
             "target-dir": "Symfony/Component/Config",
             "source": {
                 "type": "git",
@@ -122,17 +122,17 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.6",
+            "version": "v2.3.7",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "f880062d56edefb25b36f2defa65aafe65959dc7"
+                "reference": "00848d3e13cf512e77c7498c2b3b0192f61f4b18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/f880062d56edefb25b36f2defa65aafe65959dc7",
-                "reference": "f880062d56edefb25b36f2defa65aafe65959dc7",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/00848d3e13cf512e77c7498c2b3b0192f61f4b18",
+                "reference": "00848d3e13cf512e77c7498c2b3b0192f61f4b18",
                 "shasum": ""
             },
             "require": {
@@ -171,21 +171,21 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-25 06:04:15"
+            "time": "2013-11-13 21:27:40"
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v2.3.6",
+            "version": "v2.3.7",
             "target-dir": "Symfony/Component/DependencyInjection",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/DependencyInjection.git",
-                "reference": "81620c3551d411b0f7ec3bd6e978000569ec004a"
+                "reference": "3ead0b87b455289864d648152e0930629df687d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/81620c3551d411b0f7ec3bd6e978000569ec004a",
-                "reference": "81620c3551d411b0f7ec3bd6e978000569ec004a",
+                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/3ead0b87b455289864d648152e0930629df687d2",
+                "reference": "3ead0b87b455289864d648152e0930629df687d2",
                 "shasum": ""
             },
             "require": {
@@ -227,11 +227,11 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-26 22:39:53"
+            "time": "2013-11-09 15:43:20"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.3.6",
+            "version": "v2.3.7",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
@@ -278,17 +278,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.6",
+            "version": "v2.3.7",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3"
+                "reference": "c1bda5b459d792cb253de12c65beba3040163b2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/c1bda5b459d792cb253de12c65beba3040163b2b",
+                "reference": "c1bda5b459d792cb253de12c65beba3040163b2b",
                 "shasum": ""
             },
             "require": {
@@ -321,7 +321,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-22 18:04:39"
+            "time": "2013-10-17 11:48:01"
         }
     ],
     "packages-dev": [
