@@ -6,10 +6,9 @@ namespace Teeparty\Task;
  */
 interface Worker {
 
-    /**
-     * Empty constructor is needed.
-     */
-//    public function __construct();
+    public function __construct();
+
+    public function init();
 
     /**
      * Perform an execution using the given context.
@@ -19,5 +18,7 @@ interface Worker {
      * @return void
      * @throws Job\Exception
      */
-    public function work(Context $context);
+    public function run(Context $context);
+    
+    public function shutdown();
 }

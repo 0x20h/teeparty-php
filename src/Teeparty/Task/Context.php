@@ -34,25 +34,31 @@ class Context implements \ArrayAccess, \Serializable, \JsonSerializable {
     {
         throw new Exception('write access denied');
     }
- 
+
+
     public function offsetUnset($offset)
     {
         throw new Exception('write access denied');
     }
+
 
     public function serialize()
     {
         return serialize($this->data);
     }
 
+
     public function unserialize($data)
     {
         $this->data = unserialize($data);
     }
 
+
     public function jsonSerialize() {
         return $this->data;
     }
+    
+   
     /**
      * Check data values for objects and validate serializable
      */
