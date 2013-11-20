@@ -21,7 +21,7 @@ class PHPRedis implements Queue {
     public function pop(array $channels, $timeout = 0)
     {
         $item = $this->client->brpop($channels, $timeout);
-        return $item[1];
+        return $item;
     }
 
     public function push(Task $task, $channel)

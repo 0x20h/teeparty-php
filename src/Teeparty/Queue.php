@@ -11,7 +11,7 @@ interface Queue {
      * @param string[] $channels channels to pop from
      * @param int $timeout timeout for listening for new items.
      *
-     * @return Task Next task to be processed. null if no task is pending.
+     * @return array message, channel. null if no task is pending.
      */
     public function pop(array $channels, $timeout = 0);
 

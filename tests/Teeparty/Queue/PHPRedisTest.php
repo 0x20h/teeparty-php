@@ -26,14 +26,11 @@ use Teeparty\Queue\PHPRedis;
 
 Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
 
-    private $clientStub;
+    private $client;
 
     public function setUp()
     {
-        $this->clientStub = $this->getMock('\Redis');
-        $this->clientStub->expects($this->once())
-            ->method('isConnected')
-            ->will($this->returnValue(true));
+        $this->client = $this->getMock('\Redis');
     }
 
     /**
@@ -41,33 +38,45 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
      */
     public function testClientNotConnected()
     {
-        $stub = $this
-            ->getMockBuilder('\Redis')
-            ->setMockClassName('Foo')
-            ->getMock();
-
-        $stub
-            ->expects($this->once())
-            ->method('isConnected')
-            ->will($this->returnValue(false));
-
-        $queue = new \Teeparty\Queue\PHPRedis($stub);
+        $queue = new \Teeparty\Queue\PHPRedis($this->client);
     }
+
 
     public function testPop()
     {
-        $queue = new \Teeparty\Queue\PHPRedis($this->clientStub);
+        $this->assumeClientConnected();
+        $queue = new \Teeparty\Queue\PHPRedis($this->client);
+        $msg = json_encode(array('foo' => 'bar'));
 
-        $this->clientStub->expects($this->once())
+        $this->client->expects($this->once())
             ->method('brpop')
-            ->with($this->equalTo(array('foo')), $this->equalTo(3));
+            ->with($this->equalTo(array('chanA','chanB')), $this->equalTo(3))
+            ->will($this->returnValue(array('chanB', $msg)));
         
-        $queue->pop(array('foo'), 3);
+        list($channel, $rcvdMsg) = $queue->pop(array('chanA', 'chanB'), 3);
+        $this->assertEquals('chanB', $channel);
+        $this->assertEquals($msg, $rcvdMsg);
     }
 
 
     public function testPopWithInvalidChannels()
     {
-        $queue = new \Teeparty\Queue\PHPRedis($this->clientStub);
+        $this->assumeClientConnected();
+        $queue = new \Teeparty\Queue\PHPRedis($this->client);
+    }
+
+
+    public function testPushTask()
+    {
+        $this->assumeClientConnected();
+        $queue = new \Teeparty\Queue\PHPRedis($this->client);
+//        $this->client->expects($this->once())->method('lpush');
+    }
+
+    protected function assumeClientConnected()
+    {
+        $this->client->expects($this->once())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
     }
 }
