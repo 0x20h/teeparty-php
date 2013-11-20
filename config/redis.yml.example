@@ -1,16 +1,43 @@
 parameters:
     redis.host: localhost
     redis.port: 6379
+# prefix for all keys (e.g. you have multiple teeparty apps on one server
+    redis.prefix: teeparty::
+
+# default channels to listen
     channels:
         - foo
         - bar
-    timeout: 3
+        - baz
+
+# timeout when waiting for a new item from the queues
+    queue.pop.timeout: 3
+
+# This parameter will be set when invoking the worker console
+#   worker.id: foo
 
 services:
+############################################
+# Queue configuration
+############################################
+    redis:
+        class: \Redis
+        calls:
+            - [connect, ["%redis.host%", "%redis.port%"]]
+    queue:
+        class: \Teeparty\Queue\PHPRedis
+        arguments: 
+            client: @redis
+        calls:
+            - [setPrefix, ["%redis.prefix%"]]
+
+############################################
+# Logging configuration
+############################################
     monolog.formatter.line:
         class: \Monolog\Formatter\LineFormatter
         arguments:
-            format: "[%%datetime%%] %%extra.uid%%.%%level_name%%: %%message%% %%context%%\n"
+            format: "%worker.id% %%datetime%% %%level_name%%: %%message%% %%context%%\n"
     monolog.handler.file:
         class: \Monolog\Handler\RotatingFileHandler
         arguments:
@@ -25,15 +52,6 @@ services:
     monolog.processor.uid:
         class: \Monolog\Processor\UidProcessor
 
-
-    client:
-        class: \Redis
-        calls:
-            - [connect, ["%redis.host%", "%redis.port%"]]
-    queue:
-        class: \Teeparty\Queue\PHPRedis
-        arguments: 
-            client: @client
     log:
         class: \Monolog\Logger
         arguments:
@@ -42,3 +60,4 @@ services:
                 - @monolog.handler.stdout
             processors:
                 - @monolog.processor.uid
+

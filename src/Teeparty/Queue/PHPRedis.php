@@ -6,7 +6,6 @@ use Teeparty\Queue;
 use Teeparty\Task;
 
 class PHPRedis implements Queue {
-
     private $client;
 
     public function __construct(\Redis $client)
@@ -26,5 +25,17 @@ class PHPRedis implements Queue {
 
     public function push(Task $task, $channel)
     {
+    }
+
+
+    public function ack(Task $task, $result = Task::STATUS_OK)
+    {
+        $this->client->hset($task->getId(), Task::STATUS, $result);
+    }
+
+
+    public function setPrefix($prefix)
+    {
+        $this->client->setOption(\Redis::OPT_PREFIX, $prefix);
     }
 }

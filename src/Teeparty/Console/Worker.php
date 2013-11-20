@@ -13,7 +13,8 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 
 class Worker extends Command {
-
+    
+    private $id;
     private $container;
     private $active = true;
 
@@ -26,6 +27,11 @@ class Worker extends Command {
                 'CONFIG_FILE',
                 InputArgument::REQUIRED,
                 'configuration file'
+            )
+            ->addArgument(
+                'WORKER_ID', 
+                InputArgument::REQUIRED,
+                'Worker ID'
             )
             ->addOption(
                 'loops', 
@@ -40,10 +46,12 @@ class Worker extends Command {
     {
 
         try {
+            $this->id = $input->getArgument('WORKER_ID');
             $file = $input->getArgument('CONFIG_FILE');
             $this->container = new ContainerBuilder();
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
+            $this->container->setParameter('worker.id', $this->id);
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);
@@ -56,8 +64,9 @@ class Worker extends Command {
     {
         $queue = $this->container->get('queue');
         $channels = $this->container->getParameter('channels');
-        $timeout = $this->container->getParameter('timeout');
+        $timeout = $this->container->getParameter('queue.pop.timeout');
         $log = $this->container->get('log');
+
         $log->debug('Listening on channels: ' . implode(',', $channels));
 
         while($this->active) {
@@ -69,6 +78,20 @@ class Worker extends Command {
             }
 
             $log->debug('Task: ', $task);
+
+            try {
+                $queue->ack($task, $task->run($context));
+            } catch (\Exception $e) {
+                $log->error($e);
+                exit(1);
+            }
+
         }
+    }
+
+
+    public function setActive($bool)
+    {
+        $this->active = (bool) $bool;
     }
 }

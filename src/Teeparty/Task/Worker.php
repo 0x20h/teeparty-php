@@ -8,8 +8,6 @@ interface Worker {
 
     public function __construct();
 
-    public function init();
-
     /**
      * Perform an execution using the given context.
      *
@@ -19,6 +17,4 @@ interface Worker {
      * @throws Job\Exception
      */
     public function run(Context $context);
-    
-    public function shutdown();
 }

@@ -25,5 +25,19 @@ interface Queue {
      * @throws Queue\Exception If the Task could not be pushed.
      */
     public function push(Task $task, $channel);
-}
 
+
+    /**
+     * Ack a task as completed.
+     *
+     * @param Task $task
+     * @param book $result False if task failed to run.
+     */
+    public function ack(Task $task, $result = Task::STATUS_OK);
+
+
+    /**
+     * set a global prefix to use for all keys/queues.
+     */
+    public function setPrefix($prefix);
+}

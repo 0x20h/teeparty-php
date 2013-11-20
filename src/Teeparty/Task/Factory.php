@@ -13,7 +13,7 @@ class Factory {
      *
      * @return Task A new Task.
      */
-    public static function create($worker, array $context = array())
+    public static function create($worker, array $context = array(), $id = null)
     {
         if (!class_exists($worker)) {
             throw new Exception('unknown class: ' . $worker);
@@ -26,6 +26,6 @@ class Factory {
         }
         
         $c = new Context($context);
-        return new Task($w, $c);
+        return new Task($w, $c, $id);
     }
 }

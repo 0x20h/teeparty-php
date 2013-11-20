@@ -48,4 +48,24 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
     {
         Factory::create('\Teeparty\Task\Context');        
     }
+
+
+    public function testCreateWithId()
+    {
+        $worker = $this->getMock('Teeparty\Task\Worker');
+        $t1 = Factory::create(get_class($worker), array(), 'foo');
+        $t2 = Factory::create(get_class($worker), array(), 'foo');
+
+        $this->assertEquals($t1->getId(), $t2->getId());
+    }
+
+
+    public function testCreateRandomId()
+    {
+        $worker = $this->getMock('Teeparty\Task\Worker');
+        $t3 = Factory::create(get_class($worker), array());
+        $t4 = Factory::create(get_class($worker), array());
+    
+        $this->assertNotEquals($t3->getId(), $t4->getId());
+    }
 }

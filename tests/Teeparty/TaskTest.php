@@ -37,7 +37,7 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
         $worker = $this->getMock('\Teeparty\Task\Worker');
         $t = new Task($worker, new Context(array('foo' => 'bar')));
         $msg = json_decode(json_encode($t), true);
-        $t2 = Factory::create($msg['worker'], $msg['context']);
+        $t2 = Factory::create($msg['worker'], $msg['context'], $msg['id']);
         $this->assertEquals($t, $t2);
     }
 }
