@@ -1,3 +1,0 @@
-services: 
-    queue:
-        class: \Teeparty\Queue\UnixSocket
