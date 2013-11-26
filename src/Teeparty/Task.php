@@ -10,9 +10,6 @@ class Task implements \Serializable, \JsonSerializable {
     private $id;
     private $worker;
     private $context;
-    private $tries = 0;
-    private $maxTries = 10;
-    
     
     public function __construct(
         Worker $worker, 
@@ -22,47 +19,6 @@ class Task implements \Serializable, \JsonSerializable {
         $this->id = $id ? $id : uniqid();
         $this->worker = $worker;
         $this->context = $context ? $context : new Context(array());
-    }
-
-    /**
-     * Set the number of times this task was executed.
-     *
-     * @param int $tries The number of times this task was executed.
-     */
-    public function setTries($tries)
-    {
-        $this->tries = (int) $tries;
-    }
-
-    /**
-     * Get the number of times this task was executed.
-     *
-     * @return int number of times this task was executed.
-     */
-    public function getTries()
-    {
-        return $this->tries;
-    }
-
-    
-    /**
-     * Set the maximum number of times this task will be executed.
-     *
-     * @param int $tries The maximum number of times this task will be executed.
-     */
-    public function setMaxTries($maxTries)
-    {
-        $this->maxTries = (int) $maxTries;
-    }
-
-    /**
-     * Get the maximum number of times this task will be executed.
-     *
-     * @return int maximum number of times this task will be executed.
-     */
-    public function getMaxTries()
-    {
-        return $this->maxTries;
     }
 
 
@@ -95,7 +51,6 @@ class Task implements \Serializable, \JsonSerializable {
 
         $result = new Result($this, $status, $data);
         $result->setExecutionTime(microtime(true) - $start);
-        $this->setTries($this->getTries() + 1);
         return $result;
     }
 
@@ -106,8 +61,6 @@ class Task implements \Serializable, \JsonSerializable {
             'id' => $this->id,
             'worker' => get_class($this->worker),
             'context' => $this->context,
-            'tries' => $this->tries,
-            'max_tries' => $this->maxTries,
         ));
     }
 
@@ -127,8 +80,6 @@ class Task implements \Serializable, \JsonSerializable {
             'id' => $this->id,
             'worker' => get_class($this->worker),
             'context' => $this->context,
-            'tries' => $this->tries,
-            'max_tries' => $this->maxTries,
         );
     }
 }

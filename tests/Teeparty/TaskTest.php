@@ -33,44 +33,6 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     {
     }
 
-
-    public function testGetTries() {
-        $worker = $this->getMock('\Teeparty\Task\Worker');
-        $t = new Task($worker, new Context(array('foo' => 'bar')));
-
-        $this->assertEquals($t->getTries(), 0);
-        $t->execute();
-        $this->assertEquals($t->getTries(), 1);
-        $t->execute();
-        $this->assertEquals($t->getTries(), 2);
-    }
-  
- 
-    public function testSetTries() {
-        $worker = $this->getMock('\Teeparty\Task\Worker');
-        $t = new Task($worker, new Context(array('foo' => 'bar')));
-        $t->setTries(343);
-        $this->assertEquals($t->getTries(), 343);
-    }
-  
- 
-    public function testGetMaxTries() {
-        $worker = $this->getMock('\Teeparty\Task\Worker');
-        $t = new Task($worker, new Context(array('foo' => 'bar')));
-
-        $this->assertEquals($t->getMaxTries(), 10);
-    }
-
-  
-    public function testSetMaxTries() {
-        $worker = $this->getMock('\Teeparty\Task\Worker');
-        $t = new Task($worker, new Context(array('foo' => 'bar')));
-
-        $t->setMaxTries(3);
-        $this->assertEquals($t->getMaxTries(), 3);
-    }
-
-
     public function testGetId() {
         $worker = $this->getMock('\Teeparty\Task\Worker');
         $t1 = new Task($worker, new Context(array('foo' => 'bar')));
@@ -79,7 +41,6 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
         // every task must have a unique id
         $this->assertNotEquals($t1->getId(), $t2->getId());
     }
-
 
     public function testJsonSerialize()
     {
@@ -90,7 +51,6 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($t, $t2);
     }
 
-
     public function testSerialize()
     {
         $worker = $this->getMock('\Teeparty\Task\Worker');
@@ -99,7 +59,6 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
         $t2 = unserialize($msg);
         $this->assertEquals($t, $t2);
     }
-
 
     public function testExecuteTaskFailed()
     {
@@ -113,10 +72,7 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
         $t = new Task($worker, $context);
         $result = $t->execute();
         $this->assertEquals($result->getStatus(), Result::STATUS_FAILED);
-        $this->assertEquals($t->getTries(), 1);
-        $this->assertTrue($result->getExecutionTime() > -1);
     }
-
 
     public function testExecuteTaskSuccess()
     {
@@ -128,14 +84,11 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
             ->will($this->returnValue(true));
 
         $t = new Task($worker, $context);
-        $t->setTries(4);
         $result = $t->execute();
         $this->assertEquals($result->getStatus(), Result::STATUS_OK);
-        $this->assertEquals($t->getTries(), 5);
         $this->assertEquals($result->getResult(), true);
         $this->assertTrue($result->getExecutionTime() > -1);
     }
-
 
     public function testExecuteTaskException()
     {
@@ -150,7 +103,6 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
         $t = new Task($worker, $context);
         $result = $t->execute();
         $this->assertEquals($result->getStatus(), Result::STATUS_EXCEPTION);
-        $this->assertEquals($t->getTries(), 1);
         $this->assertEquals($result->getResult(), $exception);
         $this->assertTrue($result->getExecutionTime() > -1);
     }
