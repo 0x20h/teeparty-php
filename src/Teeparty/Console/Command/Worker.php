@@ -73,18 +73,22 @@ class Worker extends Command {
         $log->debug('Listening on channels: ' . implode(',', $channels));
 
         while($this->active) {
-            $task = $queue->pop($channels, $timeout);
+            try {
+                $task = $queue->pop($channels, $timeout);
+            } catch (\Exception $e) {
+                $log->error($e->getMessage(), $e->getTrace());
+            }
 
             if (empty($task)) {
                 continue;
             }
 
+            $log->info('starting task ' . $task->getId(), $task->getContext());
             $result = $task->run();
             // report task results
             $queue->ack($result);
         }
     }
-
 
     public function setActive($bool)
     {

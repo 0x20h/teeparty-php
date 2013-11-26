@@ -81,8 +81,7 @@ class PHPRedis implements Queue {
                 $msg = json_decode($item);
                 
                 if (!$this->validator->validate('task', $msg)) {
-                    var_dump($this->validator->getLastErrors());
-                    throw new Exception('invalid message');
+                    throw new Exception('invalid task: ' . $item);
                 }
 
                 try {

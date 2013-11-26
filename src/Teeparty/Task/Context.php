@@ -46,7 +46,13 @@ class Context implements \ArrayAccess, \JsonSerializable {
         return $this->data;
     }
     
-   
+    
+    public function toArray()
+    {
+        return $this->data;
+    }
+
+
     /**
      * Check data values for objects and validate serializable
      */

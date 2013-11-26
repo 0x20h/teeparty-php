@@ -34,6 +34,14 @@ class Task implements \Serializable, \JsonSerializable {
 
 
     /**
+     * Retrieve task context.
+     *
+     * @return array Parameters for the task.
+     */
+    public function getContext() {
+        return $this->context->toArray();
+    }
+    /**
      * Execute the attached worker with the given context and report results.
      *
      * @return Teeparty\Task\Result Task Result.

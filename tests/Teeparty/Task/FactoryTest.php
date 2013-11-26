@@ -68,4 +68,16 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
     
         $this->assertNotEquals($t3->getId(), $t4->getId());
     }
+
+
+    public function testCreateFromArray() {
+        $worker = $this->getMock('Teeparty\Task\Worker');
+        $t = Factory::createFromArray(array(
+            'worker' => get_class($worker),
+            'context' => 4,
+
+        ));
+        
+        $this->assertEquals($t->getContext(), array());
+    }
 }

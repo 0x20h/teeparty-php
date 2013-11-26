@@ -3,9 +3,11 @@
 require dirname(__DIR__).'/vendor/autoload.php';
 
 use Teeparty\Console\Command\Worker;
+use Teeparty\Console\Command\TaskCreate;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 $application->add(new Worker);
+$application->add(new TaskCreate);
 $application->run();
 
