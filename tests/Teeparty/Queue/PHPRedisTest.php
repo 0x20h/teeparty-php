@@ -70,13 +70,26 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
     {
         $this->assumeClientConnected();
         $queue = new \Teeparty\Queue\PHPRedis($this->client);
-//        $this->client->expects($this->once())->method('lpush');
     }
 
+
+    /**
+     * @covers registerScripts
+     */
     protected function assumeClientConnected()
     {
         $this->client->expects($this->once())
             ->method('isConnected')
+            ->will($this->returnValue(true));
+
+        // ctor setup, register scripts
+        $this->client->expects($this->at(1))
+            ->method('multi')
+            ->will($this->returnValue($this->client));
+
+        $this->client->expects($this->any())
+            ->method('script')
+            ->with($this->equalTo('load'))
             ->will($this->returnValue(true));
     }
 }

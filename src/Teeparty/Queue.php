@@ -1,6 +1,8 @@
 <?php
 namespace Teeparty;
 
+use Teeparty\Task\Result;
+
 /**
  * Interface for queue implementations.
  */
@@ -11,7 +13,8 @@ interface Queue {
      * @param string[] $channels channels to pop from
      * @param int $timeout timeout for listening for new items.
      *
-     * @return array message, channel. null if no task is pending.
+     * @return array Task, channel. null if no task is pending.
+     * @throws Teeparty\Queue\Exception If the Task could not be fetched.
      */
     public function pop(array $channels, $timeout = 0);
 
@@ -22,18 +25,17 @@ interface Queue {
      * @param string $channel put task into the given channel.
      * 
      * @return void
-     * @throws Queue\Exception If the Task could not be pushed.
+     * @throws Teeparty\Queue\Exception If the Task could not be pushed.
      */
     public function push(Task $task, $channel);
 
 
     /**
-     * Ack a task as completed.
+     * Set results for a task.
      *
-     * @param Task $task
-     * @param book $result False if task failed to run.
+     * @param Result $result Task result.
      */
-    public function ack(Task $task, $result = Task::STATUS_OK);
+    public function ack(Result $result);
 
 
     /**

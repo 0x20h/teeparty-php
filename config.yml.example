@@ -5,7 +5,7 @@ parameters:
     redis.host: localhost
     redis.port: 6379
 # prefix for all keys (e.g. you have multiple teeparty apps on one server
-    redis.prefix: teeparty::
+    redis.prefix: teeparty.
 
 # default channels to listen
     channels:
@@ -31,6 +31,7 @@ services:
         class: \Teeparty\Queue\PHPRedis
         arguments: 
             client: @redis
+            worker_id: "%worker.id%"
         calls:
             - [setPrefix, ["%redis.prefix%"]]
 

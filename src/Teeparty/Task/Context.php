@@ -4,7 +4,7 @@ namespace Teeparty\Task;
 /**
  * Interface for workers.
  */
-class Context implements \ArrayAccess, \Serializable, \JsonSerializable {
+class Context implements \ArrayAccess, \JsonSerializable {
 
     private $data;
 
@@ -42,18 +42,6 @@ class Context implements \ArrayAccess, \Serializable, \JsonSerializable {
     }
 
 
-    public function serialize()
-    {
-        return serialize($this->data);
-    }
-
-
-    public function unserialize($data)
-    {
-        $this->data = unserialize($data);
-    }
-
-
     public function jsonSerialize() {
         return $this->data;
     }
@@ -65,7 +53,7 @@ class Context implements \ArrayAccess, \Serializable, \JsonSerializable {
     private function validate(array $data)
     {
         foreach ($data as $item) {
-            if (is_object($item) && !($item instanceof \Serializable)) {
+            if (is_object($item) && !($item instanceof \JsonSerializable)) {
                 throw new Exception('cannot store object of type '.get_class($item));
             }
 

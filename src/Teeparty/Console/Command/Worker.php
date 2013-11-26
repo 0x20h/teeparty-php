@@ -1,7 +1,8 @@
 <?php
 
-namespace Teeparty\Console;
+namespace Teeparty\Console\Command;
 
+use Teeparty\Task\Result;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,7 +22,7 @@ class Worker extends Command {
     protected function configure()
     {
         $this
-            ->setName('worker')
+            ->setName('teeparty:worker')
             ->setDescription('Start worker')
             ->addArgument(
                 'CONFIG_FILE',
@@ -67,25 +68,20 @@ class Worker extends Command {
         $timeout = $this->container->getParameter('queue.pop.timeout');
         $log = $this->container->get('log');
 
+        $prefix = $this->container->getParameter('redis.prefix');
+        $log->debug('global namespace used for redis keys: ' . $prefix);
         $log->debug('Listening on channels: ' . implode(',', $channels));
 
         while($this->active) {
             $task = $queue->pop($channels, $timeout);
 
             if (empty($task)) {
-                $log->debug('timeout, idling...');
                 continue;
             }
 
-            $log->debug('Task: ', $task);
-
-            try {
-                $queue->ack($task, $task->run($context));
-            } catch (\Exception $e) {
-                $log->error($e);
-                exit(1);
-            }
-
+            $result = $task->run();
+            // report task results
+            $queue->ack($result);
         }
     }
 

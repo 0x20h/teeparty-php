@@ -20,6 +20,17 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
  * SOFTWARE.
  */
-namespace Teeparty\Task;
+namespace Teeparty;
 
-class Exception extends \Teeparty\Exception {}
+class Exception extends \Exception implements \JsonSerializable {
+
+    public function jsonSerialize()
+    {
+        return array(
+            'type' => get_class($this),
+            'message' => $this->getMessage(),
+            'code' => $this->getCode(),
+            'stack' => $this->getTraceAsString()
+        );
+    }
+}

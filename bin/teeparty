@@ -2,7 +2,7 @@
 <?php
 require dirname(__DIR__).'/vendor/autoload.php';
 
-use Teeparty\Console\Worker;
+use Teeparty\Console\Command\Worker;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
