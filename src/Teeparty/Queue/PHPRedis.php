@@ -2,10 +2,11 @@
 
 namespace Teeparty\Queue;
 
-use Teeparty\Queue;
 use Teeparty\Task;
-use Teeparty\Task\Factory;
+use Teeparty\Queue;
 use Teeparty\Task\Result;
+use Teeparty\Task\Factory;
+use Teeparty\Schema\Validator;
 
 /**
  * Queue implementation using the PHP redis extension.
@@ -19,6 +20,8 @@ class PHPRedis implements Queue {
     );
 
     private $client;
+
+    private $validator;
 
     /**
      * Worker Id.
@@ -35,6 +38,7 @@ class PHPRedis implements Queue {
     {
         $this->client = $client;
         $this->workerId = $workerId;
+        $this->validator = new Validator;
 
         if (!$this->client->isConnected()) {
             throw new \RuntimeException('\Redis client is not connected!');
@@ -74,12 +78,15 @@ class PHPRedis implements Queue {
                 $backoff = pow(2, $idle++) * 50000;
                 usleep($backoff);
             } else if ($item) {
-                var_dump($item);
-                $msg = json_decode($item, true);
+                $msg = json_decode($item);
+                
+                if (!$this->validator->validate('task', $msg)) {
+                    var_dump($this->validator->getLastErrors());
+                    throw new Exception('invalid message');
+                }
 
                 try {
-                    //$this->validate('teeparty\Task', $item);
-                    $task = Factory::createFromArray($msg['task']);
+                    $task = Factory::createFromMessage($msg);
                     return $task;
                 } catch(Exception $e) {
                     throw $e;

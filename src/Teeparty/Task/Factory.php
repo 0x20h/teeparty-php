@@ -36,7 +36,11 @@ class Factory {
 
     public static function createFromArray(array $data)
     {
-        $task = self::create($data['worker'], $data['context'], $data['id']);
+        $task = self::create(
+            $data['worker'], 
+            (array) $data['context'], 
+            $data['id']
+        );
         
         $properties = array(
             'max_tries' => 'setMaxTries',
@@ -52,5 +56,11 @@ class Factory {
         }
         
         return $task;
+    }
+
+
+    public static function createFromMessage($msg)
+    {
+        return self::createFromArray((array) $msg);
     }
 }

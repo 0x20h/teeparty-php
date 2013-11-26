@@ -1,0 +1,15 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "task schema",
+	"description": "...",
+	"type": "object",
+	"properties": {
+		"id": { 
+			"type": "string",
+			"pattern": "^[0-9a-f]+$" 
+		},
+		"worker": { "type" : "string" },
+		"context": { "$ref": "context.json#/" }
+	},
+	"required": ["id", "worker"]
+}

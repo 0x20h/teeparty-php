@@ -23,6 +23,8 @@
 namespace Teeparty\Queue;
 
 use Teeparty\Queue\PHPRedis;
+use Teeparty\Task;
+use Teeparty\Task\Context;
 
 Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
 
@@ -38,38 +40,42 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
      */
     public function testClientNotConnected()
     {
-        $queue = new \Teeparty\Queue\PHPRedis($this->client);
+        $queue = new \Teeparty\Queue\PHPRedis($this->client, '');
     }
 
 
     public function testPop()
     {
+        $worker = $this->getMock('Teeparty\Task\Worker');
         $this->assumeClientConnected();
-        $queue = new \Teeparty\Queue\PHPRedis($this->client);
-        $msg = json_encode(array('foo' => 'bar'));
+        $queue = new \Teeparty\Queue\PHPRedis($this->client, 'a3d3');
+        $msg = json_encode(new Task($worker, new Context));
 
         $this->client->expects($this->once())
-            ->method('brpop')
-            ->with($this->equalTo(array('chanA','chanB')), $this->equalTo(3))
-            ->will($this->returnValue(array('chanB', $msg)));
+            ->method('evalSHA')
+            ->with(
+                $this->equalTo('pop'), 
+                $this->equalTo(array('chanA','chanB', 'a3d3')), 
+                $this->equalTo(2)
+            )
+            ->will($this->returnValue($msg));
         
-        list($channel, $rcvdMsg) = $queue->pop(array('chanA', 'chanB'), 3);
-        $this->assertEquals('chanB', $channel);
-        $this->assertEquals($msg, $rcvdMsg);
+        $task = $queue->pop(array('chanA', 'chanB'), 3);
+        $this->assertEquals($msg, json_encode($task));
     }
 
 
     public function testPopWithInvalidChannels()
     {
         $this->assumeClientConnected();
-        $queue = new \Teeparty\Queue\PHPRedis($this->client);
+        $queue = new \Teeparty\Queue\PHPRedis($this->client, '223s');
     }
 
 
     public function testPushTask()
     {
         $this->assumeClientConnected();
-        $queue = new \Teeparty\Queue\PHPRedis($this->client);
+        $queue = new \Teeparty\Queue\PHPRedis($this->client, '23ss');
     }
 
 
@@ -89,7 +95,10 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
 
         $this->client->expects($this->any())
             ->method('script')
-            ->with($this->equalTo('load'))
-            ->will($this->returnValue(true));
+            ->with($this->equalTo('load'));
+
+        $this->client->expects($this->once())
+            ->method('exec')
+            ->will($this->returnValue(array('pop','push')));
     }
 }
