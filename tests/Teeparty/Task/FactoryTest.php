@@ -22,6 +22,7 @@
  */
 namespace Teeparty\Task;
 
+use Teeparty\Job;
 use Teeparty\Task;
 
 class FactoryTest extends \PHPUnit_Framework_TestCase {
@@ -32,7 +33,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
      * @expectedException Teeparty\Task\Exception
      * @expectedExceptionMessage unknown class: \Foo
      */
-    public function testCreateUnknownWorkerType()
+    public function testCreateUnknownJobType()
     {
         Factory::create('\Foo');        
     }
@@ -44,7 +45,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
      * @expectedException Teeparty\Task\Exception
      * @expectedExceptionMessage \Teeparty\Task\Context must implement \Teep
      */
-    public function testCreateInvalidWorkerType()
+    public function testCreateInvalidJobType()
     {
         Factory::create('\Teeparty\Task\Context');        
     }
@@ -52,9 +53,9 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
 
     public function testCreateWithId()
     {
-        $worker = $this->getMock('Teeparty\Task\Worker');
-        $t1 = Factory::create(get_class($worker), array(), 'foo');
-        $t2 = Factory::create(get_class($worker), array(), 'foo');
+        $job = $this->getMock('Teeparty\Job');
+        $t1 = Factory::create(get_class($job), array(), 'foo');
+        $t2 = Factory::create(get_class($job), array(), 'foo');
 
         $this->assertEquals($t1->getId(), $t2->getId());
     }
@@ -62,18 +63,18 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
 
     public function testCreateRandomId()
     {
-        $worker = $this->getMock('Teeparty\Task\Worker');
-        $t3 = Factory::create(get_class($worker), array());
-        $t4 = Factory::create(get_class($worker), array());
+        $job = $this->getMock('Teeparty\Job');
+        $t3 = Factory::create(get_class($job), array());
+        $t4 = Factory::create(get_class($job), array());
     
         $this->assertNotEquals($t3->getId(), $t4->getId());
     }
 
 
     public function testCreateFromArray() {
-        $worker = $this->getMock('Teeparty\Task\Worker');
+        $job = $this->getMock('Teeparty\Job');
         $t = Factory::createFromArray(array(
-            'worker' => get_class($worker),
+            'job' => get_class($job),
             'context' => 4,
 
         ));

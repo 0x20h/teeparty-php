@@ -1,10 +1,10 @@
 <?php
-namespace Teeparty\Task;
+namespace Teeparty;
 
 /**
- * Interface for workers.
+ * Interface for jobs.
  */
-interface Worker {
+interface Job {
 
     public function __construct();
 
@@ -14,7 +14,7 @@ interface Worker {
      * @param Context $context Context information for the job.
      * 
      * @return void
-     * @throws Job\Exception
+     * @throws Exception
      */
-    public function run(Context $context);
+    public function run(Task\Context $context);
 }

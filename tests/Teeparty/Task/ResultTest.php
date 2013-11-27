@@ -29,18 +29,18 @@ use Teeparty\Task\Exception;
 
 class ResultTest extends \PHPUnit_Framework_TestCase {
 
-    private $worker;
+    private $job;
     
     public function setUp()
     {
-        $this->worker = $this->getMock('Teeparty\Task\Worker');
+        $this->job = $this->getMock('Teeparty\Job');
     }
 
 
     public function testConstruct()
     {
         $rs = array('foo' => 'bar');
-        $task = new Task($this->worker, new Context($rs));
+        $task = new Task($this->job, new Context($rs));
         $result = new Result($task, Result::STATUS_OK, $rs);
         $this->assertEquals(Result::STATUS_OK, $result->getStatus());
         $this->assertEquals($rs, $result->getResult());
@@ -53,7 +53,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase {
 
     public function testExceptionResult()
     {
-        $task = new Task($this->worker);
+        $task = new Task($this->job);
         
         $e = new Exception('exception');
         $result = new Result($task, Result::STATUS_EXCEPTION, $e);

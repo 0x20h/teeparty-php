@@ -22,7 +22,7 @@
  */
 namespace Teeparty\Queue;
 
-use Teeparty\Queue\PHPRedis;
+use Teeparty\Job;
 use Teeparty\Task;
 use Teeparty\Task\Context;
 
@@ -46,10 +46,10 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
 
     public function testPop()
     {
-        $worker = $this->getMock('Teeparty\Task\Worker');
+        $job = $this->getMock('Teeparty\Job');
         $this->assumeClientConnected();
         $queue = new \Teeparty\Queue\PHPRedis($this->client, 'a3d3');
-        $msg = json_encode(new Task($worker, new Context));
+        $msg = json_encode(new Task($job, new Context));
 
         $this->client->expects($this->once())
             ->method('evalSHA')

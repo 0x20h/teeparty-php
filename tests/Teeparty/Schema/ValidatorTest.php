@@ -92,9 +92,8 @@ Class ValidatorTest extends \PHPUnit_Framework_TestCase {
    
     public function getValidData() {
         return json_decode('{
-            "id": "33",
-            "worker": "Foo",
-            "context": []
+            "id": "33abef",
+            "job": "Foo"
         }');
     }
 }

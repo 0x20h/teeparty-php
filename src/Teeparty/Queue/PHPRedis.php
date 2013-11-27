@@ -34,11 +34,14 @@ class PHPRedis implements Queue {
      */
     private $workerId;
     
-    public function __construct(\Redis $client, $workerId)
+    public function __construct(
+        \Redis $client,
+        $workerId,
+        Validator $validator = null)
     {
         $this->client = $client;
         $this->workerId = $workerId;
-        $this->validator = new Validator;
+        $this->validator = $validator ? $validator : new Validator;
 
         if (!$this->client->isConnected()) {
             throw new \RuntimeException('\Redis client is not connected!');
@@ -179,3 +182,4 @@ class PHPRedis implements Queue {
         return isset(self::$scriptSHAs[$name]) ? self::$scriptSHAs[$name] : null;
     }
 }
+

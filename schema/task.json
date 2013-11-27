@@ -8,8 +8,8 @@
 			"type": "string",
 			"pattern": "^[0-9a-f]+$" 
 		},
-		"worker": { "type" : "string" },
+		"job": { "type" : "string" },
 		"context": { "$ref": "context.json#/" }
 	},
-	"required": ["id", "worker"]
+	"required": ["id", "job"]
 }

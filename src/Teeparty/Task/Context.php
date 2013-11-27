@@ -2,7 +2,7 @@
 namespace Teeparty\Task;
 
 /**
- * Interface for workers.
+ * Context is an argument wrapper for Job implementations.
  */
 class Context implements \ArrayAccess, \JsonSerializable {
 

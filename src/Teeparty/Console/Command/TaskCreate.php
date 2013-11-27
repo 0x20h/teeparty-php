@@ -31,9 +31,9 @@ class TaskCreate extends Command {
                 'configuration file'
             )
             ->addArgument(
-                'WORKER_CLASS', 
+                'JOB', 
                 InputArgument::REQUIRED,
-                'Classname of the worker to invoke'
+                'Classname of the job to invoke'
             )
             ->addOption(
                 'channel', 
@@ -55,7 +55,7 @@ class TaskCreate extends Command {
 
         try {
             $this->id = $_SERVER['USER'];
-            $worker = $input->getArgument('WORKER_CLASS');
+            $job = $input->getArgument('JOB');
             $file = $input->getArgument('CONFIG_FILE');
             $context = $input->getOption('context');
             $this->container = new ContainerBuilder();
@@ -67,7 +67,7 @@ class TaskCreate extends Command {
             $queue = $this->container->get('queue');
             $log = $this->container->get('log');
 
-            $task = Factory::create($worker, $context);
+            $task = Factory::create($job, $context);
             $queue->push($task, $channel);
 
         } catch (\Exception $e) {

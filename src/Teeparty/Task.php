@@ -2,22 +2,21 @@
 namespace Teeparty;
 
 use Teeparty\Task\Context;
-use Teeparty\Task\Worker;
 use Teeparty\Task\Result;
 
 class Task implements \Serializable, \JsonSerializable {
 
     private $id;
-    private $worker;
+    private $job;
     private $context;
     
     public function __construct(
-        Worker $worker, 
+        Job $job, 
         Context $context = null, 
         $id = null)
     {
         $this->id = $id ? $id : uniqid();
-        $this->worker = $worker;
+        $this->job = $job;
         $this->context = $context ? $context : new Context(array());
     }
 
@@ -42,7 +41,7 @@ class Task implements \Serializable, \JsonSerializable {
         return $this->context->toArray();
     }
     /**
-     * Execute the attached worker with the given context and report results.
+     * Execute the attached job with the given context and report results.
      *
      * @return Teeparty\Task\Result Task Result.
      */
@@ -50,7 +49,7 @@ class Task implements \Serializable, \JsonSerializable {
     {
         try {
             $start = microtime(true);
-            $data = $this->worker->run($this->context);
+            $data = $this->job->run($this->context);
             $status = $data !== false ? Result::STATUS_OK : Result::STATUS_FAILED;
         } catch (\Exception $e) {
             $status = Result::STATUS_EXCEPTION;
@@ -67,7 +66,7 @@ class Task implements \Serializable, \JsonSerializable {
     {
         return serialize(array(
             'id' => $this->id,
-            'worker' => get_class($this->worker),
+            'job' => get_class($this->job),
             'context' => $this->context,
         ));
     }
@@ -77,7 +76,7 @@ class Task implements \Serializable, \JsonSerializable {
     {
         $data = unserialize($data);
         $this->id = $data['id'];
-        $this->worker = new $data['worker'];
+        $this->job = new $data['job'];
         $this->context = $data['context'];
     }
 
@@ -86,7 +85,7 @@ class Task implements \Serializable, \JsonSerializable {
     {
         return array(
             'id' => $this->id,
-            'worker' => get_class($this->worker),
+            'job' => get_class($this->job),
             'context' => $this->context,
         );
     }
