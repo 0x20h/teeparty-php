@@ -8,10 +8,10 @@ use Teeparty\Task;
  */
 class Result implements \JsonSerializable {
 
-    const STATUS_OK = 0;
-    const STATUS_FAILED = 1;
-    const STATUS_EXCEPTION = 2;
-    const STATUS_FATAL = 3;
+    const STATUS_OK = 'ok';
+    const STATUS_FAILED = 'fail';
+    const STATUS_EXCEPTION = 'exception';
+    const STATUS_FATAL = 'fatal';
 
     private $result;
     private $executionTime = -1;
