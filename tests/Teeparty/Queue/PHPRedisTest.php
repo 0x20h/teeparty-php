@@ -24,7 +24,6 @@ namespace Teeparty\Queue;
 
 use Teeparty\Job;
 use Teeparty\Task;
-use Teeparty\Task\Context;
 
 Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
 
@@ -49,7 +48,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $job = $this->getMock('Teeparty\Job');
         $this->assumeClientConnected();
         $queue = new \Teeparty\Queue\PHPRedis($this->client, 'a3d3');
-        $msg = json_encode(new Task($job, new Context));
+        $msg = json_encode(new Task($job, array()));
         
         $this->client->expects($this->once())
             ->method('evalSHA')

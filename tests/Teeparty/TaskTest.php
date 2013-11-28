@@ -23,7 +23,6 @@
 namespace Teeparty;
 
 use Teeparty\Job;
-use Teeparty\Task\Context;
 use Teeparty\Task\Factory;
 use Teeparty\Task\Result;
 
@@ -35,8 +34,8 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetId() {
         $job = $this->getMock('Teeparty\Job');
-        $t1 = new Task($job, new Context(array('foo' => 'bar')));
-        $t2 = new Task($job, new Context(array('foo' => 'bar')));
+        $t1 = new Task($job, array('foo' => 'bar'));
+        $t2 = new Task($job, array('foo' => 'bar'));
 
         // every task must have a unique id
         $this->assertNotEquals($t1->getId(), $t2->getId());
@@ -45,7 +44,7 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     public function testJsonSerialize()
     {
         $job = $this->getMock('\Teeparty\Job');
-        $t = new Task($job, new Context(array('foo' => 'bar')));
+        $t = new Task($job, array('foo' => 'bar'));
         $msg = json_decode(json_encode($t), true);
         $t2 = Factory::create($msg['job'], $msg['context'], $msg['id']);
         $this->assertEquals($t, $t2);
@@ -54,7 +53,7 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     public function testSerialize()
     {
         $job = $this->getMock('Teeparty\Job');
-        $t = new Task($job, new Context(array('foo' => 'bar')));
+        $t = new Task($job, array('foo' => 'bar'));
         $msg = serialize($t);
         $t2 = unserialize($msg);
         $this->assertEquals($t, $t2);
@@ -63,7 +62,7 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     public function testExecuteTaskFailed()
     {
         $job = $this->getMock('Teeparty\Job');
-        $context = new Context(array('foo' => 'bar'));
+        $context = array('foo' => 'bar');
         $job->expects($this->once())
             ->method('run')
             ->with($this->equalTo($context))
@@ -77,7 +76,7 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     public function testExecuteTaskSuccess()
     {
         $job = $this->getMock('Teeparty\Job');
-        $context = new Context(array('foo' => 'bar'));
+        $context = array('foo' => 'bar');
         $job->expects($this->once())
             ->method('run')
             ->with($this->equalTo($context))
@@ -93,7 +92,7 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     public function testExecuteTaskException()
     {
         $job = $this->getMock('\Teeparty\Job');
-        $context = new Context(array('foo' => 'bar'));
+        $context = array('foo' => 'bar');
         $exception = new Exception('exception');
         $job->expects($this->once())
             ->method('run')

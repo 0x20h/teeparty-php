@@ -4,7 +4,6 @@ namespace Teeparty\Console\Command;
 
 use Teeparty\Task\Factory;
 use Teeparty\Task\Result;
-use Teeparty\Task\Context;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;

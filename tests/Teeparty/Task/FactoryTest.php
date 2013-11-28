@@ -43,11 +43,11 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
      * Test that creating a task with an invalid class throws an exception.
      *
      * @expectedException Teeparty\Task\Exception
-     * @expectedExceptionMessage \Teeparty\Task\Context must implement \Teep
+     * @expectedExceptionMessage \Teeparty\Task\Factory must implement \Teeparty\Job
      */
     public function testCreateInvalidJobType()
     {
-        Factory::create('\Teeparty\Task\Context');        
+        Factory::create('\Teeparty\Task\Factory');        
     }
 
 

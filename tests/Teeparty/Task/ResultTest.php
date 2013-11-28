@@ -23,7 +23,6 @@
 namespace Teeparty\Task;
 
 use Teeparty\Task;
-use Teeparty\Task\Context;
 use Teeparty\Task\Result;
 use Teeparty\Task\Exception;
 
@@ -40,7 +39,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase {
     public function testConstruct()
     {
         $rs = array('foo' => 'bar');
-        $task = new Task($this->job, new Context($rs));
+        $task = new Task($this->job, $rs);
         $result = new Result($task, Result::STATUS_OK, $rs);
         $this->assertEquals(Result::STATUS_OK, $result->getStatus());
         $this->assertEquals($rs, $result->getResult());

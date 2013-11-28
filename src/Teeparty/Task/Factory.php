@@ -28,11 +28,10 @@ class Factory {
         }
 
         if (!$w instanceof Job) {
-            throw new Exception($job.' must implement \Teeparty\Task\Job');
+            throw new Exception($job.' must implement \Teeparty\Job');
         }
         
-        $c = new Context($context);
-        return new Task($w, $c, $id);
+        return new Task($w, $context, $id);
     }
 
 

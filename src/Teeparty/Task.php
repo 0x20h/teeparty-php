@@ -1,7 +1,6 @@
 <?php
 namespace Teeparty;
 
-use Teeparty\Task\Context;
 use Teeparty\Task\Result;
 
 class Task implements \Serializable, \JsonSerializable {
@@ -10,14 +9,11 @@ class Task implements \Serializable, \JsonSerializable {
     private $job;
     private $context;
     
-    public function __construct(
-        Job $job, 
-        Context $context = null, 
-        $id = null)
+    public function __construct(Job $job, array $context = array(), $id = null)
     {
         $this->id = $id ? $id : uniqid();
         $this->job = $job;
-        $this->context = $context ? $context : new Context(array());
+        $this->context = $context;
     }
 
 
@@ -38,8 +34,10 @@ class Task implements \Serializable, \JsonSerializable {
      * @return array Parameters for the task.
      */
     public function getContext() {
-        return $this->context->toArray();
+        return $this->context;
     }
+    
+   
     /**
      * Execute the attached job with the given context and report results.
      *

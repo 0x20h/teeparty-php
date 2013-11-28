@@ -11,10 +11,10 @@ interface Job {
     /**
      * Perform an execution using the given context.
      *
-     * @param Context $context Context information for the job.
+     * @param array $context context for the job.
      * 
      * @return void
      * @throws Exception
      */
-    public function run(Task\Context $context);
+    public function run(array $context);
 }

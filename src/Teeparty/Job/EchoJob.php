@@ -27,13 +27,12 @@
 namespace Teeparty\Job;
 
 use Teeparty\Job;
-use Teeparty\Task\Context;
 
 class EchoJob implements Job {
 
     public function __construct() {}
 
-    public function run(Context $context)
+    public function run(array $context)
     {
         $message = isset($context['message']) ? $context['message'] : null;
         usleep(500 * 1000);
