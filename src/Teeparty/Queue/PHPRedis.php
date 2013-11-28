@@ -84,7 +84,10 @@ class PHPRedis implements Queue {
                 $msg = json_decode($item);
                 
                 if (!$this->validator->validate('task', $msg)) {
-                    throw new Exception('invalid task: ' . $item);
+                    throw new Exception('invalid task: ' . print_r(
+                        $this->validator->getLastErrors(),
+                        true
+                    ));
                 }
 
                 try {
@@ -108,11 +111,30 @@ class PHPRedis implements Queue {
      * @param Task $task The task to accomplish.
      * @param string $channel Channel to push task to.
      *
-     * @return bool True if the task was pushed successfully.
+     * @return string The id of the pushed task.
+     * @throws Exception if the task could not be pushed.
      */
     public function push(Task $task, $channel)
     {
+        $result = $this->client->evalSHA(
+            self::$scriptSHAs['push'],
+            array(
+                $channel,
+                'task.' . $task->getId(),
+                json_encode($task),
+            ),
+            2
+        );
 
+        if (!$result) {
+            $error = $this->client->getLastError();
+
+            if ($error) {
+                throw new Exception('redis error: ' . $error);
+            }
+        }
+
+        return $task->getId();
     }
 
     

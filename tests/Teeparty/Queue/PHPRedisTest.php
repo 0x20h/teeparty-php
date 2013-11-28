@@ -50,7 +50,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $this->assumeClientConnected();
         $queue = new \Teeparty\Queue\PHPRedis($this->client, 'a3d3');
         $msg = json_encode(new Task($job, new Context));
-
+        
         $this->client->expects($this->once())
             ->method('evalSHA')
             ->with(

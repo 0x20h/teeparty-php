@@ -44,9 +44,9 @@ class TaskCreate extends Command {
             ->addOption(
                 'context', 
                 null, 
-                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'optional task context', 
-                array()
+                InputOption::VALUE_OPTIONAL,
+                'optional JSON encoded task context', 
+                ''
             );
     }
 
@@ -57,19 +57,33 @@ class TaskCreate extends Command {
             $this->id = $_SERVER['USER'];
             $job = $input->getArgument('JOB');
             $file = $input->getArgument('CONFIG_FILE');
-            $context = $input->getOption('context');
+            $channel = $input->getOption('channel');
+            $context = json_decode($input->getOption('context'), true);
+            
+            if (!$context) {
+                $context = array();
+            }
+
             $this->container = new ContainerBuilder();
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
             $this->container->setParameter('worker.id', $this->id);
 
 
-            $queue = $this->container->get('queue');
             $log = $this->container->get('log');
 
             $task = Factory::create($job, $context);
-            $queue->push($task, $channel);
+            $log->info('pushing ' . $job . ' to ' . $channel, $context);
+            
+            $queue = $this->container->get('queue');
+            $id = $queue->push($task, $channel);
 
+            if (!$id) {
+                $log->error('failed pushing task', (array) $task);
+                exit(1);
+            } else {
+                $log->info('Pushed task: '.$task->getId());
+            }
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);

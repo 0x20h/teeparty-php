@@ -51,12 +51,15 @@ class Factory {
      */
     public static function createFromArray(array $data)
     {
+        if (is_array($data['context']) || is_object($data['context'])) {
+            $context = (array) $data['context']; 
+        } else {
+            $context = array();
+        }
+        
         $task = self::create(
             $data['job'], 
-            (array) (isset($data['context']) && is_array($data['context']) 
-                ? $data['context'] 
-                : array()
-            ),
+            $context,
             isset($data['id']) ? $data['id'] : ''
         );
         

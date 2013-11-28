@@ -84,7 +84,10 @@ class Worker extends Command {
             }
 
             $log->info('starting task ' . $task->getId(), $task->getContext());
-            $result = $task->run();
+            $result = $task->execute();
+            $log->info('finished task ' . $task->getId(), array(
+                $result->getResult()
+            ));
             // report task results
             $queue->ack($result);
         }

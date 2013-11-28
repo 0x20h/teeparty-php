@@ -69,7 +69,7 @@ Class ValidatorTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($validator->validate('task', array()));
         $data->foo = 'bar';
         $this->assertTrue($validator->validate('task', $data));
-        $data->context = array();
+        $data->context = new \stdClass;
         $this->assertTrue($validator->validate('task', $data));
     }
 

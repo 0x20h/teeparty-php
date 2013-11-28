@@ -41,8 +41,8 @@ services:
     monolog.formatter.line:
         class: \Monolog\Formatter\LineFormatter
         arguments:
-            format: "%worker.id% %%datetime%% %%level_name%%: %%message%%\n"
-            # format: "%worker.id% %%datetime%% %%level_name%%: %%message%% %%context%%\n"
+            # format: "%worker.id% %%datetime%% %%level_name%%: %%message%%\n"
+            format: "%worker.id% %%datetime%% %%level_name%%: %%message%% %%context%%\n"
     monolog.handler.file:
         class: \Monolog\Handler\RotatingFileHandler
         arguments:
