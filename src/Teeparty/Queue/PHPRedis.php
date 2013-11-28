@@ -23,6 +23,8 @@ class PHPRedis implements Queue {
 
     private $validator;
 
+    private $idle = 0;
+
     /**
      * Worker Id.
      *
@@ -62,7 +64,6 @@ class PHPRedis implements Queue {
     public function pop(array $channels, $timeout = 2000)
     {
         $now = time();
-        $idle = 0;
 
         while(time() < $now + $timeout) {
             $item = $this->client->evalSHA(
@@ -77,10 +78,16 @@ class PHPRedis implements Queue {
                 if ($error) {
                     throw new Exception('redis error: ' . $error);
                 }
-                    
-                $backoff = pow(2, $idle++) * 50000;
+                  
+                if ($this->idle > 5) {
+                    $backoff = 2 * 10E5;
+                } else {
+                    $backoff = pow(2, $this->idle++) * 50000;
+                }
+                
                 usleep($backoff);
             } else if ($item) {
+                $this->idle = 0;
                 $msg = json_decode($item);
                 
                 if (!$this->validator->validate('task', $msg)) {
