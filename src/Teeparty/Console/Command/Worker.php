@@ -1,5 +1,5 @@
 <?php
-
+declare(ticks=1);
 namespace Teeparty\Console\Command;
 
 use Teeparty\Task\Result;
@@ -45,6 +45,7 @@ class Worker extends Command {
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        pcntl_signal(SIGTERM, array($this, 'handleSignal'));
 
         try {
             $this->id = $input->getArgument('WORKER_ID');
@@ -70,7 +71,7 @@ class Worker extends Command {
 
         $prefix = $this->container->getParameter('redis.prefix');
         $log->debug('global namespace used for redis keys: ' . $prefix);
-        $log->debug('Listening on channels: ' . implode(',', $channels));
+        $log->info('Listening on channels: ' . implode(',', $channels));
 
         while($this->active) {
             try {
@@ -83,18 +84,31 @@ class Worker extends Command {
                 continue;
             }
 
-            $log->info('starting task ' . $task->getId(), $task->getContext());
+            $log->debug('starting task ' . $task->getName(), $task->getContext());
             $result = $task->execute();
-            $log->info('finished task ' . $task->getId(), array(
-                $result->getResult()
-            ));
+            $log->info('finished task ' . $task->getName() . ' in ' . 
+                $result->getExecutionTime(), $result->getResult());
             // report task results
             $queue->ack($result);
         }
+
+        $log->info('BYE BYE');
     }
 
     public function setActive($bool)
     {
         $this->active = (bool) $bool;
+    }
+
+    public function handleSignal($signal)
+    {
+        $log = $this->container->get('log');
+        $log->info('got signal '.$signal);
+        
+        switch($signal) {
+        case 15:
+            $log->info('setting worker inactive...');
+            $this->setActive(false);
+        }
     }
 }

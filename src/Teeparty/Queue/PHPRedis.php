@@ -153,6 +153,10 @@ class PHPRedis implements Queue {
      */
     public function ack(Result $result)
     {
+        $this->client->hmset(
+            'result.' . $result->getTask()->getId(),
+            $result->jsonSerialize()
+        );
     }
 
     /**

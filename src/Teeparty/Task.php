@@ -37,7 +37,12 @@ class Task implements \Serializable, \JsonSerializable {
         return $this->context;
     }
     
-   
+    
+    public function getName()
+    {
+        return $this->job->getName() . '@' . $this->getId();
+    }
+
     /**
      * Execute the attached job with the given context and report results.
      *

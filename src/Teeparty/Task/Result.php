@@ -4,7 +4,7 @@ namespace Teeparty\Task;
 use Teeparty\Task;
 
 /**
- * Represent task results and status information.
+ * Represent task returnValues and status information.
  */
 class Result implements \JsonSerializable {
 
@@ -13,33 +13,33 @@ class Result implements \JsonSerializable {
     const STATUS_EXCEPTION = 'exception';
     const STATUS_FATAL = 'fatal';
 
-    private $result;
+    private $returnValue;
     private $executionTime = -1;
     private $status;
     private $task;
 
-    public function __construct(Task $task, $status, $result = null)
+    public function __construct(Task $task, $status, $returnValue = null)
     {
         $this->task = $task;
         $this->setStatus($status);
-        $this->validate($result);
-        $this->result = $result;
+        $this->validate($returnValue);
+        $this->returnValue = $returnValue;
     }
 
 
-    public function setResult($result)
+    public function setResult($returnValue)
     {
-        $this->result = $result;
+        $this->returnValue = $returnValue;
     }
 
 
     public function getResult()
     {
-        return $this->result;
+        return $this->returnValue;
     }
 
     /**
-     * Set the result status.
+     * Set the returnValue status.
      *
      * @param int $status Status identifier.
      */
@@ -80,7 +80,13 @@ class Result implements \JsonSerializable {
         return $this->executionTime;
     }
     
-   
+    
+    public function getTask()
+    {
+        return $this->task;
+    }
+
+
     /**
      * JSON serialization format
      *
@@ -89,9 +95,9 @@ class Result implements \JsonSerializable {
     public function jsonSerialize() {
         return array(
             'status' => $this->status,
-            'task' => $this->task,
+            'task_id' => $this->task->getId(),
             'execution_time' => $this->executionTime,
-            'result' => $this->result
+            'returnValue' => json_encode($this->returnValue)
         );
     }
 

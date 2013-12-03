@@ -17,4 +17,6 @@ interface Job {
      * @throws Exception
      */
     public function run(array $context);
+    public function getName();
+    public function getDescription();
 }

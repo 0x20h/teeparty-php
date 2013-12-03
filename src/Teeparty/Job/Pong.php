@@ -28,15 +28,32 @@ namespace Teeparty\Job;
 
 use Teeparty\Job;
 
-class EchoJob implements Job {
+/**
+ * This job simply returns its arguments.
+ */
+class Pong implements Job {
 
     public function __construct() {}
 
     public function run(array $context)
     {
-        $message = isset($context['message']) ? $context['message'] : null;
-        usleep(500 * 1000);
-        return $message;
+        if (isset($context['sleep'])) {
+            usleep($context['sleep'] * 100);
+        }
+        
+        return $context;
+    }
+
+
+    public function getName()
+    {
+        return __CLASS__;
+    }
+
+
+    public function getDescription()
+    {
+        return 'Stupidly return the arguments.';
     }
 }
 
