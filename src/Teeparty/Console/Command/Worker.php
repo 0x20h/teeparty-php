@@ -25,14 +25,14 @@ class Worker extends Command {
             ->setName('teeparty:worker')
             ->setDescription('Start worker')
             ->addArgument(
-                'CONFIG_FILE',
-                InputArgument::REQUIRED,
-                'configuration file'
-            )
-            ->addArgument(
                 'WORKER_ID', 
                 InputArgument::REQUIRED,
                 'Worker ID'
+            )
+            ->addArgument(
+                'CHANNELS',
+                InputArgument::REQUIRED | InputArgument::IS_ARRAY,
+                'configuration file'
             )
             ->addOption(
                 'loops', 
@@ -40,6 +40,12 @@ class Worker extends Command {
                 InputOption::VALUE_OPTIONAL, 
                 'How many loops to perform (e.g. only run N tasks)', 
                 0
+            )->addOption(
+                'config',
+                'c',
+                InputOption::VALUE_REQUIRED,
+                'Configuration file to use [~/.teeparty.yml',
+                '~/.teeparty.yml'
             );
     }
 
@@ -49,7 +55,9 @@ class Worker extends Command {
 
         try {
             $this->id = $input->getArgument('WORKER_ID');
-            $file = $input->getArgument('CONFIG_FILE');
+            $channels = $input->getArgument('CHANNELS');
+            $loops = $input->getOption('loops');
+            $file = $input->getOption('config');
             $this->container = new ContainerBuilder();
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
@@ -58,14 +66,14 @@ class Worker extends Command {
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);
         }
-
-        $this->loop();
+        
+        $this->loop($channels, $loops);
     }
 
-    private function loop()
+    private function loop(array $channels, $loops = 0)
     {
+        $i = 0;
         $queue = $this->container->get('queue');
-        $channels = $this->container->getParameter('channels');
         $timeout = $this->container->getParameter('queue.pop.timeout');
         $log = $this->container->get('log');
 
@@ -73,7 +81,7 @@ class Worker extends Command {
         $log->debug('global namespace used for redis keys: ' . $prefix);
         $log->info('Listening on channels: ' . implode(',', $channels));
 
-        while($this->active) {
+        while((!$loops || $i++ < $loops) && $this->active) {
             try {
                 $task = $queue->pop($channels, $timeout);
             } catch (\Exception $e) {
