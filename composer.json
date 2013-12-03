@@ -1,5 +1,5 @@
 {
-	"name": "0x20h/turtur-php-client",
+	"name": "0x20h/teeparty"
 	"description": "small turtur client library for turturd, the async task manager",
 	"keywords": ["async", "redis", "queue"],
 	"type": "library",
