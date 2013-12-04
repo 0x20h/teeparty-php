@@ -15,6 +15,7 @@ class PHPRedis implements Queue {
 
     private static $scriptSHAs = array();
     protected static $scriptSources = array(
+        'ack' => 'ack.lua',
         'pop' => 'pop.lua',
         'push' => 'push.lua',
     );
@@ -68,8 +69,9 @@ class PHPRedis implements Queue {
         while(time() < $now + $timeout) {
             $item = $this->client->evalSHA(
                 self::$scriptSHAs['pop'],
-                array_merge($channels, array($this->workerId)),
-                count($channels)
+                array_merge($channels, array('worker.'.$this->workerId)),
+                // use worker_id as key in order to be prefixed correctly
+                count($channels) + 1
             );
             
             if (!$item) {
@@ -153,9 +155,16 @@ class PHPRedis implements Queue {
      */
     public function ack(Result $result)
     {
-        $this->client->hmset(
-            'result.' . $result->getTask()->getId(),
-            $result->jsonSerialize()
+        $task = $result->getTask();
+
+        $this->client->evalSHA(
+            self::$scriptSHAs['ack'],
+            array(
+                'result.' . $task->getId(),
+                'task.' . $task->getId(),
+                json_encode($result),
+            ),
+            2
         );
     }
 
@@ -192,27 +201,24 @@ class PHPRedis implements Queue {
 
         $result = $multi->exec();
 
-        if ($result) {
-            self::$scriptSHAs = array_combine(
-                array_keys(self::$scriptSources), 
-                $result
-            );
-           
-            return true;
+        if ($result != array_filter($result)) {
+            $i = 0;
+            $msg = '';
+
+            foreach (self::$scriptSources as $key => $script) {
+                if (!$result[$i++]) {
+                    $msg .= 'Failed to register script "'. $script . '".'; 
+                }
+            }
+            
+            throw new Exception('ERRORS: ' . $msg);
         }
 
-        return false;
-    }
-
-
-    /**
-     * Retrieve the sha1 hash for the requested script.
-     *
-     * @return string SHA1 sum.
-     */
-    private function script($name)
-    {
-        return isset(self::$scriptSHAs[$name]) ? self::$scriptSHAs[$name] : null;
+        self::$scriptSHAs = array_combine(
+            array_keys(self::$scriptSources), 
+            $result
+        );
+       
+        return true;
     }
 }
-

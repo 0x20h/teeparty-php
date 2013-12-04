@@ -1,22 +1,30 @@
 --[[
-Pop a pending item from one of the requsted channels and register
-the item for the given worker.
-KEYS: the channels
-ARGS: worker_id
-]]--
-local worker_id = ARGV[1]
-for i, channel in ipairs(KEYS) do
-    local msg = redis.call('rpop', KEYS[i])
+Pop a pending item from one of the requsted channels, increase the number
+of tries and register the item for the given worker.
 
-    if msg then
-        -- read task_id from task
-        local task = cjson.decode(msg)
-        local task_id = task.id
+KEYS: 
+ - the channels (1..N-1)
+ - worker_key (N)
+]]--
+
+-- retrieve & remove worker_key from KEYS
+local worker_key = table.remove(KEYS)
+
+for i, channel in ipairs(KEYS) do
+    local task_key = redis.call('rpop', KEYS[i])
+
+    if task_key then
+        -- increase tries
+        redis.call('hincrby', task_key, 'tries', 1)
         
-        -- register that worker_id processes task
-        redis.call('hmset', 'worker.' .. worker_id, 'current_task', task_id)
-        return msg
-    end
+        -- load task 
+        local task = redis.call('hget', task_key, 'task')
+
+        -- register that worker_key processes task
+        redis.call('hmset', worker_key, 'current_task', task_key)
+
+        return task
+	end
 end
 
 return 0
