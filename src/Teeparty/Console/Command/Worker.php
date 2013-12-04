@@ -83,6 +83,8 @@ class Worker extends Command {
         $log->info('Listening on channels: ' . implode(',', $channels));
 
         while((!$loops || $i++ < $loops) && $this->active) {
+            $task = null;
+
             try {
                 $task = $queue->pop($channels, $timeout);
                 $this->exceptionBackoff = 0;
