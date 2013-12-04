@@ -38,7 +38,19 @@ class Pong implements Job {
     public function run(array $context)
     {
         if (isset($context['sleep'])) {
-            usleep($context['sleep'] * 100);
+            sleep((int) ($context['sleep'] / 1000));
+        }
+
+        if (isset($context['exception'])) {
+            if (rand() / getRandMax() < $context['exception']) {
+                throw new Exception();
+            }
+        }
+
+        if (isset($context['fatal'])) {
+            if (rand() / getRandMax() < $context['fatal']) {
+                $context->unknownMethod();
+            }
         }
         
         return $context;
@@ -53,7 +65,8 @@ class Pong implements Job {
 
     public function getDescription()
     {
-        return 'Stupidly return the arguments.';
+        return 'Job for testing functionality. Return results,' .
+            'throw Exceptions, fatal errors, etc...';
     }
 }
 
