@@ -18,6 +18,7 @@ class Worker extends Command {
     private $id;
     private $container;
     private $active = true;
+    private $exceptionBackoff = 0;
 
     protected function configure()
     {
@@ -84,8 +85,10 @@ class Worker extends Command {
         while((!$loops || $i++ < $loops) && $this->active) {
             try {
                 $task = $queue->pop($channels, $timeout);
+                $this->exceptionBackoff = 0;
             } catch (\Exception $e) {
                 $log->error($e->getMessage(), $e->getTrace());
+                usleep(min(pow(2, $this->exceptionBackoff++ + 10), 2 * 1E6));
             }
 
             if (empty($task)) {
@@ -95,7 +98,7 @@ class Worker extends Command {
             $log->debug('starting task ' . $task->getName(), $task->getContext());
             $result = $task->execute();
             $log->info('finished task ' . $task->getName() . ' in ' . 
-                $result->getExecutionTime(), $result->getResult());
+                $result->getExecutionTime(), (array)$result->getResult());
             // report task results
             $queue->ack($result);
         }
