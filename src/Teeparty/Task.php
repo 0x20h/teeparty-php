@@ -50,6 +50,8 @@ class Task implements \Serializable, \JsonSerializable {
      */
     public function execute()
     {
+        $startDate = new \DateTime;
+
         try {
             $start = microtime(true);
             $data = $this->job->run($this->context);
@@ -59,8 +61,9 @@ class Task implements \Serializable, \JsonSerializable {
             $data = $e;
         }
 
-        $result = new Result($this, $status, $data);
+        $result = new Result($this->getId(), $status, $data);
         $result->setExecutionTime(microtime(true) - $start);
+        $result->setStartDate($startDate);
         return $result;
     }
 

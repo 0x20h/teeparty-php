@@ -2,6 +2,7 @@
 namespace Teeparty\Task;
 
 use Teeparty\Task;
+use Teeparty\Schema\Validator;
 
 /**
  * Represent task returnValues and status information.
@@ -15,12 +16,13 @@ class Result implements \JsonSerializable {
 
     private $returnValue;
     private $executionTime = -1;
+    private $startDate = null;
     private $status;
-    private $task;
+    private $taskId;
 
-    public function __construct(Task $task, $status, $returnValue = null)
+    public function __construct($taskId, $status, $returnValue = null)
     {
-        $this->task = $task;
+        $this->taskId = $taskId;
         $this->setStatus($status);
         $this->validate($returnValue);
         $this->returnValue = $returnValue;
@@ -81,12 +83,22 @@ class Result implements \JsonSerializable {
     }
     
     
-    public function getTask()
+    public function getTaskId()
     {
-        return $this->task;
+        return $this->taskId;
     }
 
 
+    public function setStartDate(\DateTime $date) {
+        $this->startDate = $date;
+    }
+
+
+    public function getStartDate() {
+        return $this->startDate;
+    }
+    
+   
     /**
      * JSON serialization format
      *
@@ -94,10 +106,11 @@ class Result implements \JsonSerializable {
      */
     public function jsonSerialize() {
         return array(
-            'status' => $this->status,
-            'task_id' => $this->task->getId(),
-            'execution_time' => $this->executionTime,
-            'returnValue' => $this->returnValue
+            'task_id' => $this->getTaskId(),
+            'status' => $this->getStatus(),
+            'start_date' => $this->getStartDate()->format(\DateTime::ATOM),
+            'execution_time' => $this->getExecutionTime(),
+            'returnValue' => $this->getResult()
         );
     }
 
@@ -116,6 +129,32 @@ class Result implements \JsonSerializable {
         );
     }
 
+
+    /**
+     * Create a result object from JSON.
+     *
+     * @param string $json JSON encoded result object.
+     * @param Validator $validator JSON schema validator.
+     * 
+     * @return Result The result object.
+     */
+    public static function fromJSON($json, Validator $validator = null) {
+        $data = json_decode($json, true);
+        $validator = $validator ? $validator : new Validator();
+        // $validator->validate('result', $data);
+
+        $result = new Result(
+            $data['task_id'],
+            $data['status'],
+            is_string($data['returnValue']) ? 
+                json_decode($data['returnValue'], true) :
+                $data['returnValue']
+        );
+
+        $result->setExecutionTime($data['execution_time']);
+        $result->setStartDate(new \DateTime($data['start_date']));
+        return $result;
+    }
 
     private function validate($data)
     {

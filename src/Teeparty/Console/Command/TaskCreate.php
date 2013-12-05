@@ -3,7 +3,6 @@
 namespace Teeparty\Console\Command;
 
 use Teeparty\Task\Factory;
-use Teeparty\Task\Result;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,28 +22,29 @@ class TaskCreate extends Command {
     {
         $this
             ->setName('teeparty:task:create')
-            ->setDescription('Create a task [and fetch results].')
+            ->setDescription('Create a task')
             ->addArgument(
-                'CONFIG_FILE',
+                'CHANNEL', 
                 InputArgument::REQUIRED,
-                'configuration file'
+                'Channel to push the job to.'
             )
             ->addArgument(
                 'JOB', 
                 InputArgument::REQUIRED,
-                'Classname of the job to invoke'
+                'Classname of the job to invoke.'
             )
             ->addOption(
-                'channel', 
+                'config',
                 'c',
                 InputOption::VALUE_REQUIRED,
-                'push task to channel'
+                'Configuration file to use [~/.teeparty.yml].',
+                '~/.teeparty.yml'
             )
             ->addOption(
                 'context', 
                 null, 
                 InputOption::VALUE_OPTIONAL,
-                'optional JSON encoded task context', 
+                'optional JSON encoded task context.', 
                 ''
             );
     }
@@ -54,9 +54,9 @@ class TaskCreate extends Command {
 
         try {
             $this->id = $_SERVER['USER'];
+            $channel = $input->getArgument('CHANNEL');
             $job = $input->getArgument('JOB');
-            $file = $input->getArgument('CONFIG_FILE');
-            $channel = $input->getOption('channel');
+            $file = $input->getOption('config');
             $context = json_decode($input->getOption('context'), true);
             
             if (!$context) {

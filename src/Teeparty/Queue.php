@@ -42,4 +42,14 @@ interface Queue {
      * set a global prefix to use for all keys/queues.
      */
     public function setPrefix($prefix);
+
+
+    /**
+     * Return task results.
+     *
+     * @param string $taskId The task results.
+     * @return Teeparty\Task\Result[] Array of results for every try.
+     *                                False if no result found.
+     */
+    public function result($taskId);
 }

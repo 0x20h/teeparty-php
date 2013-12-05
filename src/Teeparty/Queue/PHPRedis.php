@@ -155,13 +155,13 @@ class PHPRedis implements Queue {
      */
     public function ack(Result $result)
     {
-        $task = $result->getTask();
+        $taskId = $result->getTaskId();
 
         $this->client->evalSHA(
             self::$scriptSHAs['ack'],
             array(
-                'result.' . $task->getId(),
-                'task.' . $task->getId(),
+                'result.' . $taskId,
+                'task.' . $taskId,
                 json_encode($result),
             ),
             2
@@ -182,6 +182,23 @@ class PHPRedis implements Queue {
     }
 
 
+    public function result($taskId) {
+        $resultKey = 'result.' . $taskId;
+
+        $results = $this->client->hgetall($resultKey);
+
+        if (!$results) {
+            return false;
+        }
+        
+        $return = array();
+
+        foreach ($results as $key => $result) {
+            $return[$key] = Result::fromJSON($result);
+        }
+
+        return $return;
+    }
     /**
      * Register lua scripts and make the SHAs available via self::$scriptSHAs.
      *

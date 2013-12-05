@@ -2,7 +2,6 @@
 declare(ticks=1);
 namespace Teeparty\Console\Command;
 
-use Teeparty\Task\Result;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -45,7 +44,7 @@ class Worker extends Command {
                 'config',
                 'c',
                 InputOption::VALUE_REQUIRED,
-                'Configuration file to use [~/.teeparty.yml',
+                'Configuration file to use [~/.teeparty.yml]',
                 '~/.teeparty.yml'
             );
     }
