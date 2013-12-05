@@ -61,12 +61,9 @@ class ResultTest extends \PHPUnit_Framework_TestCase {
 
         $fromJSON = json_decode(json_encode($result), true);
         $this->assertEquals($fromJSON['status'], Result::STATUS_EXCEPTION);
-        $this->assertEquals($fromJSON['task']['id'], $task->getId());
-        $this->assertEquals($fromJSON['result']['message'], 'exception');
-        $this->assertEquals($fromJSON['result']['type'], 'Teeparty\Task\Exception');
-        $this->assertTrue(isset($fromJSON['result']['stack']));
-
-        $taskFromJSON = Factory::createFromArray($fromJSON['task']);
-        $this->assertEquals($task, $taskFromJSON);
+        $this->assertEquals($fromJSON['task_id'], $task->getId());
+        $this->assertEquals($fromJSON['returnValue']['message'], 'exception');
+        $this->assertEquals($fromJSON['returnValue']['type'], 'Teeparty\Task\Exception');
+        $this->assertTrue(isset($fromJSON['returnValue']['stack']));
     }
 }

@@ -97,7 +97,7 @@ class Result implements \JsonSerializable {
             'status' => $this->status,
             'task_id' => $this->task->getId(),
             'execution_time' => $this->executionTime,
-            'returnValue' => json_encode($this->returnValue)
+            'returnValue' => $this->returnValue
         );
     }
 
