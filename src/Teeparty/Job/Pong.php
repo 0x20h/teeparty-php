@@ -38,7 +38,7 @@ class Pong implements Job {
     public function run(array $context)
     {
         if (isset($context['sleep'])) {
-            sleep((int) ($context['sleep'] / 1000));
+            sleep((int) $context['sleep']);
         }
 
         if (isset($context['exception'])) {
