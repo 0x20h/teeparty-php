@@ -55,7 +55,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase {
         $task = new Task($this->job);
         
         $e = new Exception('exception');
-        $result = new Result($task, Result::STATUS_EXCEPTION, $e);
+        $result = new Result($task->getId(), Result::STATUS_EXCEPTION, $e);
         $this->assertEquals(Result::STATUS_EXCEPTION, $result->getStatus());
         $this->assertEquals($result->getResult(), $e);
 

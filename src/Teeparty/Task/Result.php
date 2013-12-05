@@ -108,7 +108,9 @@ class Result implements \JsonSerializable {
         return array(
             'task_id' => $this->getTaskId(),
             'status' => $this->getStatus(),
-            'start_date' => $this->getStartDate()->format(\DateTime::ATOM),
+            'start_date' => $this->getStartDate() ?
+                $this->getStartDate()->format(\DateTime::ATOM) :
+                null,
             'execution_time' => $this->getExecutionTime(),
             'returnValue' => $this->getResult()
         );
