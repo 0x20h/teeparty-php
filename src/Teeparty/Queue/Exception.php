@@ -2,6 +2,5 @@
 
 namespace Teeparty\Queue;
 
-use Teeparty\Exception as BaseException;
 
-class Exception extends BaseException {}
+class Exception extends \Teeparty\Exception {}
