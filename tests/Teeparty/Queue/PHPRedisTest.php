@@ -54,8 +54,8 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
             ->method('evalSHA')
             ->with(
                 $this->equalTo('pop'), 
-                $this->equalTo(array('chanA','chanB', 'a3d3')), 
-                $this->equalTo(2)
+                $this->equalTo(array('chanA','chanB', 'worker.a3d3')), 
+                $this->equalTo(3)
             )
             ->will($this->returnValue($msg));
         
@@ -98,6 +98,6 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
 
         $this->client->expects($this->once())
             ->method('exec')
-            ->will($this->returnValue(array('pop','push')));
+            ->will($this->returnValue(array('ack', 'pop','push')));
     }
 }
