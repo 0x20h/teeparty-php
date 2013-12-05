@@ -79,7 +79,7 @@ class Result implements \JsonSerializable {
      * @return float execution time in msecs.
      */
     public function getExecutionTime() {
-        return $this->executionTime;
+        return number_format($this->executionTime, 4, '.', '');
     }
     
     

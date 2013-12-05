@@ -93,7 +93,6 @@ class Result extends Command {
             }
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
-            $log->error($e->getMessage(), $e->getTrace());
             exit(1);
         }
     }
