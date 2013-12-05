@@ -1,7 +1,7 @@
 {
 	"name": "0x20h/teeparty"
-	"description": "small turtur client library for turturd, the async task manager",
-	"keywords": ["async", "redis", "queue"],
+	"description": "teeparty client. Asynchronous redis backed task execution.",
+	"keywords": ["task", "async", "redis", "queue", "scheduling", "cron"],
 	"type": "library",
 	"license": "MIT",
 	"authors": [{

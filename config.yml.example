@@ -4,8 +4,8 @@
 parameters:
     redis.host: localhost
     redis.port: 6379
-# prefix for all keys (e.g. you have multiple teeparty apps on one server
-    redis.prefix: teeparty.
+# prefix for all keys (e.g. you have multiple teeparty apps on one server)
+    redis.prefix: app.
 
 # timeout when waiting for a new item from the queues
     queue.pop.timeout: 3
@@ -44,12 +44,10 @@ services:
             maxFiles: 3
     monolog.handler.stdout:
         class: \Monolog\Handler\StreamHandler
-        calls:
-            - [setFormatter, [@monolog.formatter.line]]
         arguments:
             stream: php://stdout
-    monolog.processor.uid:
-        class: \Monolog\Processor\UidProcessor
+        calls:
+            - [setFormatter, [@monolog.formatter.line]]
 
     log:
         class: \Monolog\Logger
@@ -57,6 +55,3 @@ services:
             name: worker
             handlers: 
                 - @monolog.handler.stdout
-            processors:
-                - @monolog.processor.uid
-

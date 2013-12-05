@@ -65,8 +65,8 @@ class Pong implements Job {
 
     public function getDescription()
     {
-        return 'Job for testing functionality. Return results,' .
-            'throw Exceptions, fatal errors, etc...';
+        return 'Job for testing functionality like job durations, error '.
+            'conditions, etc.';
     }
 }
 
