@@ -68,10 +68,25 @@ class TaskCreate extends Command {
             $loader->load(basename($file));
             $this->container->setParameter('worker.id', $this->id);
 
+        } catch (\Exception $e) {
+            $output->writeln('<error>'.$e->getMessage().'</error>');
+        }
 
+        try {
             $log = $this->container->get('log');
 
-            $task = new Task($job, $context);
+            if (!class_exists($job)) {
+                throw new \Teeparty\Exception('class ' . $job. ' not found');
+            }
+
+            $instance = new $job;
+
+            if (!($instance instanceof \Teeparty\Job)) {
+                throw new \Teeparty\Exception('class ' . $job.
+                    ' is not a Teeparty\Job');
+            }
+
+            $task = new Task($instance, $context);
             $log->info('pushing ' . $job . ' to ' . $channel, $context);
             
             $queue = $this->container->get('queue');
@@ -84,6 +99,7 @@ class TaskCreate extends Command {
                 $log->info('Pushed task: '.$task->getId());
             }
         } catch (\Exception $e) {
+            $log->error($e->getMessage(), $e->getTrace());
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);
         }
