@@ -10,7 +10,7 @@ use Teeparty\Schema\Validator;
 class Result implements \JsonSerializable {
 
     const STATUS_OK = 'ok';
-    const STATUS_FAILED = 'fail';
+    const STATUS_FAILED = 'failed';
     const STATUS_EXCEPTION = 'exception';
     const STATUS_FATAL = 'fatal';
 

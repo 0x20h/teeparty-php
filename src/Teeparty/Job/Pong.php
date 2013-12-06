@@ -41,6 +41,12 @@ class Pong implements Job {
             sleep((int) $context['sleep']);
         }
 
+        if (isset($context['failed'])) {
+            if (rand() / getRandMax() < $context['failed']) {
+                return false;
+            }
+        }
+
         if (isset($context['exception'])) {
             if (rand() / getRandMax() < $context['exception']) {
                 throw new Exception();

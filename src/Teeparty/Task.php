@@ -2,6 +2,7 @@
 namespace Teeparty;
 
 use Teeparty\Task\Result;
+use Teeparty\Schema\Validator;
 
 class Task implements \Serializable, \JsonSerializable {
 
@@ -94,5 +95,15 @@ class Task implements \Serializable, \JsonSerializable {
             'job' => get_class($this->job),
             'context' => $this->context,
         );
+    }
+
+
+    public static function fromJSON($json)
+    {
+        $data = json_decode($json);
+        $validator = new Validator();
+        $validator->validate('task', $data);
+
+        return new Task(new $data->job, (array) $data->context, $data->id);
     }
 }

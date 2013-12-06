@@ -79,16 +79,14 @@ class Result extends Command {
                 foreach($results as $i => $result) {
                     $output->writeln(str_repeat('-', 80));
                     $output->writeln('<info>#'.$i.'</info>');
-                    $output->writeln('<comment>Task ID:</comment>        ' . 
-                        $result->getTaskId());
                     $output->writeln('<comment>Status:         </comment>' . 
                         $result->getStatus());
                     $output->writeln('<comment>Started at:     </comment>' .
                         $result->getStartDate()->format('Y-m-d H:i:s'));
                     $output->writeln('<comment>Execution time: </comment>' .
-                        $result->getExecutionTime());
+                        $result->getExecutionTime() . ' secs.');
                     $output->writeln('<comment>returnValue:    </comment>' . 
-                       print_r($result->getResult(), true));
+                       var_export($result->getResult(), true));
                 }
             }
         } catch (\Exception $e) {

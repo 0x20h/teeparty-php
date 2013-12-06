@@ -90,17 +90,9 @@ class PHPRedis implements Queue {
                 usleep($backoff);
             } else if ($item) {
                 $this->idle = 0;
-                $msg = json_decode($item);
                 
-                if (!$this->validator->validate('task', $msg)) {
-                    throw new Exception('invalid task: ' . print_r(
-                        $this->validator->getLastErrors(),
-                        true
-                    ));
-                }
-
                 try {
-                    $task = Factory::createFromMessage($msg);
+                    $task = Task::fromJSON($item);
                     return $task;
                 } catch(Exception $e) {
                     throw $e;
@@ -197,6 +189,7 @@ class PHPRedis implements Queue {
             $return[$key] = Result::fromJSON($result);
         }
 
+        ksort($return);
         return $return;
     }
     /**

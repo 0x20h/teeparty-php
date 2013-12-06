@@ -2,7 +2,7 @@
 
 namespace Teeparty\Console\Command;
 
-use Teeparty\Task\Factory;
+use Teeparty\Task;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -71,7 +71,7 @@ class TaskCreate extends Command {
 
             $log = $this->container->get('log');
 
-            $task = Factory::create($job, $context);
+            $task = new Task($job, $context);
             $log->info('pushing ' . $job . ' to ' . $channel, $context);
             
             $queue = $this->container->get('queue');

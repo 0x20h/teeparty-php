@@ -23,7 +23,6 @@
 namespace Teeparty;
 
 use Teeparty\Job;
-use Teeparty\Task\Factory;
 use Teeparty\Task\Result;
 
 Class TaskTest extends \PHPUnit_Framework_TestCase {
@@ -45,8 +44,8 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     {
         $job = $this->getMock('\Teeparty\Job');
         $t = new Task($job, array('foo' => 'bar'));
-        $msg = json_decode(json_encode($t), true);
-        $t2 = Factory::create($msg['job'], $msg['context'], $msg['id']);
+        $msg = json_encode($t);
+        $t2 = Task::fromJSON($msg);
         $this->assertEquals($t, $t2);
     }
 
