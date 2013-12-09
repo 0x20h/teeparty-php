@@ -1,7 +1,0 @@
-{
-	"title": "Execution context",
-	"oneOf": {
-		"type": "object",
-		"type": "array"
-	}
-}

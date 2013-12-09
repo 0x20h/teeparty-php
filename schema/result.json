@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
-	"title": "task schema",
+	"title": "task result",
 	"description": "...",
 	"type": "object",
 	"properties": {
@@ -8,13 +8,19 @@
 			"type": "string",
 			"pattern": "^[0-9a-f]+$" 
 		},
-		"job": { "type" : "string" },
-		"context": {
+		"execution_time": {
+			"type": "number"
+		},
+		"start_date": {
+			"type": "string",
+			"format": "date"
+		},
+		"returnValue": { 
 			"oneof": {
 				"type": "array",
 				"type": "object"
 			}
 		}
 	},
-	"required": ["id", "job"]
+	"required": ["id", "returnValue"]
 }

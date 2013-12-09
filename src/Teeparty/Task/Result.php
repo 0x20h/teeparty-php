@@ -141,20 +141,20 @@ class Result implements \JsonSerializable {
      * @return Result The result object.
      */
     public static function fromJSON($json, Validator $validator = null) {
-        $data = json_decode($json, true);
+        $data = json_decode($json);
         $validator = $validator ? $validator : new Validator();
-        // $validator->validate('result', $data);
+        $validator->validate('result', $data);
 
         $result = new Result(
-            $data['task_id'],
-            $data['status'],
-            is_string($data['returnValue']) ? 
-                json_decode($data['returnValue'], true) :
-                $data['returnValue']
+            $data->task_id,
+            $data->status,
+            is_string($data->returnValue) ?
+                json_decode($data->returnValue, true) :
+                (array) $data->returnValue
         );
 
-        $result->setExecutionTime($data['execution_time']);
-        $result->setStartDate(new \DateTime($data['start_date']));
+        $result->setExecutionTime($data->execution_time);
+        $result->setStartDate(new \DateTime($data->start_date));
         return $result;
     }
 

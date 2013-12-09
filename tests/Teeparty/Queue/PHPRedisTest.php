@@ -71,12 +71,55 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
     }
 
 
-    public function testPushTask()
+    public function testPushTaskSuccess()
     {
         $this->assumeClientConnected();
         $queue = new \Teeparty\Queue\PHPRedis($this->client, '23ss');
+
+        $task = new Task($this->getMock('Teeparty\Job'), array());
+ 
+        $this->client->expects($this->once())
+            ->method('evalSHA')
+            ->with(
+                $this->equalTo('push'), 
+                $this->equalTo(array(
+                    'foo', 
+                    'task.' . $task->getId(), 
+                    json_encode($task->jsonSerialize())
+                )), 
+                $this->equalTo(2)
+            )
+            ->will($this->returnValue(true));
+
+        $queue->push($task, 'foo');
     }
 
+    
+    /**
+     * @expectedException Teeparty\Queue\Exception foo
+     */
+    public function testPushTaskException()
+    {
+        $this->assumeClientConnected();
+        $queue = new \Teeparty\Queue\PHPRedis($this->client, '23ss');
+
+        $task = new Task($this->getMock('Teeparty\Job'), array());
+
+        $this->client->expects($this->once())
+            ->method('evalSHA')
+            ->with(
+                $this->equalTo('push'), 
+                $this->equalTo(array(
+                    'foo', 
+                    'task.' . $task->getId(), 
+                    json_encode($task->jsonSerialize())
+                )), 
+                $this->equalTo(2)
+            )
+            ->will($this->throwException(new \RedisException('foo')));
+
+        $queue->push($task, 'foo');
+    }
 
     /**
      * @covers registerScripts

@@ -71,7 +71,13 @@ class Result extends Command {
             
             switch ($format) {
             case 'json':
-                $output->writeln(json_encode($results));
+                $out = array();
+
+                foreach ($results as $result) {
+                    $out[] = $result->jsonSerialize();
+                }
+
+                $output->writeln(json_encode($out));
                 break;
             default:
                 $output->writeln('Results:');
@@ -91,6 +97,7 @@ class Result extends Command {
             }
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
+            $output->writeln('<error>'.$e->getTraceAsString().'</error>');
             exit(1);
         }
     }

@@ -117,15 +117,19 @@ class PHPRedis implements Queue {
      */
     public function push(Task $task, $channel)
     {
-        $result = $this->client->evalSHA(
-            self::$scriptSHAs['push'],
-            array(
-                $channel,
-                'task.' . $task->getId(),
-                json_encode($task),
-            ),
-            2
-        );
+        try {
+            $result = $this->client->evalSHA(
+                self::$scriptSHAs['push'],
+                array(
+                    $channel,
+                    'task.' . $task->getId(),
+                    json_encode($task->jsonSerialize()), // 5.3 compat
+                ),
+                2
+            );
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), null, $e);
+        }
 
         if (!$result) {
             $error = $this->client->getLastError();
@@ -154,7 +158,7 @@ class PHPRedis implements Queue {
             array(
                 'result.' . $taskId,
                 'task.' . $taskId,
-                json_encode($result),
+                json_encode($result->jsonSerialize()), // 5.3 compat
             ),
             2
         );
