@@ -24,7 +24,7 @@ interface Queue {
      * @param Task $task Task to be processed
      * @param string $channel put task into the given channel.
      * 
-     * @return void
+     * @return string The Task ID.
      * @throws Teeparty\Queue\Exception If the Task could not be pushed.
      */
     public function push(Task $task, $channel);
