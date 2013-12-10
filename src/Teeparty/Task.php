@@ -12,7 +12,7 @@ class Task implements \Serializable, \JsonSerializable {
     
     public function __construct(Job $job, array $context = array(), $id = null)
     {
-        $this->id = $id ? $id : uniqid();
+        $this->id = $id ? $id : uniqid(true);
         $this->job = $job;
         $this->context = $context;
     }

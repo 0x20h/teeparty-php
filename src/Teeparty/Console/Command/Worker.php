@@ -62,12 +62,12 @@ class Worker extends Command {
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
             $this->container->setParameter('worker.id', $this->id);
+            $this->loop($channels, $loops);
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);
         }
         
-        $this->loop($channels, $loops);
     }
 
     private function loop(array $channels, $loops = 0)
@@ -96,16 +96,15 @@ class Worker extends Command {
                 continue;
             }
 
-            $log->debug('starting task ' . $task->getName(), $task->getContext());
+            $log->info('executing task ' . $task->getId(), $task->getContext());
             $result = $task->execute();
-            $log->info('finished task ' . $task->getName() . ' in ' . 
+            $log->debug('finished task ' . $task->getId() . ' in ' .
                 $result->getExecutionTime(), (array)$result->getResult());
             // report task results
             $queue->ack($result);
         }
-
-        $log->info('BYE BYE');
     }
+
 
     public function setActive($bool)
     {
