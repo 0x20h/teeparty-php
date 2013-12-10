@@ -8,7 +8,11 @@ use Teeparty\Task\Result;
  */
 interface Client {
     /**
-     * Retrieve a new task from the queue.
+     * Retrieve a new task from one of the given channels.
+     *
+     * This method requests the given channels (in order) for a new task. If no 
+     * task is pending, the method returns null after $timeout msecs. The first 
+     * task that is obtained by one of the channels is returned.
      *
      * @param string[] $channels channels to pop from
      * @param int $timeout timeout for listening for new items.
@@ -19,7 +23,7 @@ interface Client {
     public function get(array $channels, $timeout = 0);
 
     /**
-     * Put a new Task into the queue.
+     * Put a new Task into the channel.
      *
      * @param Task $task Task to be processed
      * @param string $channel put task into the given channel.
@@ -31,7 +35,7 @@ interface Client {
 
 
     /**
-     * Set results for a task.
+     * Acknowledge results for a task.
      *
      * @param Result $result Task result.
      */
@@ -39,7 +43,9 @@ interface Client {
 
 
     /**
-     * set a global prefix to use for all keys/queues.
+     * Set a global prefix to use for all keys/channels.
+     *
+     * @param string $prefix A prefix (e.g. `myapp.`).
      */
     public function setPrefix($prefix);
 
