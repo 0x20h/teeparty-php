@@ -20,7 +20,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
  * SOFTWARE.
  */
-namespace Teeparty\Queue;
+namespace Teeparty\Client;
 
 use Teeparty\Job;
 use Teeparty\Task;
@@ -39,7 +39,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
      */
     public function testClientNotConnected()
     {
-        $queue = new \Teeparty\Queue\PHPRedis($this->client, '');
+        $queue = new \Teeparty\Client\PHPRedis($this->client, '');
     }
 
 
@@ -47,19 +47,19 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
     {
         $job = $this->getMock('Teeparty\Job');
         $this->assumeClientConnected();
-        $queue = new \Teeparty\Queue\PHPRedis($this->client, 'a3d3');
+        $queue = new \Teeparty\Client\PHPRedis($this->client, 'a3d3');
         $msg = json_encode(new Task($job, array()));
         
         $this->client->expects($this->once())
             ->method('evalSHA')
             ->with(
-                $this->equalTo('pop'), 
+                $this->equalTo('get'), 
                 $this->equalTo(array('chanA','chanB', 'worker.a3d3')), 
                 $this->equalTo(3)
             )
             ->will($this->returnValue($msg));
         
-        $task = $queue->pop(array('chanA', 'chanB'), 3);
+        $task = $queue->get(array('chanA', 'chanB'), 3);
         $this->assertEquals($msg, json_encode($task));
     }
 
@@ -67,21 +67,21 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
     public function testPopWithInvalidChannels()
     {
         $this->assumeClientConnected();
-        $queue = new \Teeparty\Queue\PHPRedis($this->client, '223s');
+        $queue = new \Teeparty\Client\PHPRedis($this->client, '223s');
     }
 
 
     public function testPushTaskSuccess()
     {
         $this->assumeClientConnected();
-        $queue = new \Teeparty\Queue\PHPRedis($this->client, '23ss');
+        $queue = new \Teeparty\Client\PHPRedis($this->client, '23ss');
 
         $task = new Task($this->getMock('Teeparty\Job'), array());
  
         $this->client->expects($this->once())
             ->method('evalSHA')
             ->with(
-                $this->equalTo('push'), 
+                $this->equalTo('put'), 
                 $this->equalTo(array(
                     'foo', 
                     'task.' . $task->getId(), 
@@ -91,24 +91,24 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
             )
             ->will($this->returnValue(true));
 
-        $queue->push($task, 'foo');
+        $queue->put($task, 'foo');
     }
 
     
     /**
-     * @expectedException Teeparty\Queue\Exception foo
+     * @expectedException Teeparty\Client\Exception foo
      */
     public function testPushTaskException()
     {
         $this->assumeClientConnected();
-        $queue = new \Teeparty\Queue\PHPRedis($this->client, '23ss');
+        $queue = new \Teeparty\Client\PHPRedis($this->client, '23ss');
 
         $task = new Task($this->getMock('Teeparty\Job'), array());
 
         $this->client->expects($this->once())
             ->method('evalSHA')
             ->with(
-                $this->equalTo('push'), 
+                $this->equalTo('put'), 
                 $this->equalTo(array(
                     'foo', 
                     'task.' . $task->getId(), 
@@ -118,7 +118,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
             )
             ->will($this->throwException(new \RedisException('foo')));
 
-        $queue->push($task, 'foo');
+        $queue->put($task, 'foo');
     }
 
     /**
@@ -141,6 +141,6 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
 
         $this->client->expects($this->once())
             ->method('exec')
-            ->will($this->returnValue(array('ack', 'pop','push')));
+            ->will($this->returnValue(array('ack', 'get','put')));
     }
 }

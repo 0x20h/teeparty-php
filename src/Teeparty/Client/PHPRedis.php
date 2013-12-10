@@ -1,23 +1,23 @@
 <?php
 
-namespace Teeparty\Queue;
+namespace Teeparty\Client;
 
 use Teeparty\Task;
-use Teeparty\Queue;
+use Teeparty\Client;
 use Teeparty\Task\Result;
 use Teeparty\Task\Factory;
 use Teeparty\Schema\Validator;
 
 /**
- * Queue implementation using the PHP redis extension.
+ * Client implementation using the PHP redis extension.
  */
-class PHPRedis implements Queue {
+class PHPRedis implements Client {
 
     private static $scriptSHAs = array();
     protected static $scriptSources = array(
         'ack' => 'ack.lua',
-        'pop' => 'pop.lua',
-        'push' => 'push.lua',
+        'get' => 'get.lua',
+        'put' => 'put.lua',
     );
 
     private $client;
@@ -54,7 +54,9 @@ class PHPRedis implements Queue {
     }
 
     /**
-     * Pop a task and assign workerId to the received task.
+     * Get a task from one of the given channels.
+     *
+     * Also assign workerId to the received task.
      *
      * @param array $channels Channels to fetch a task from, prioritized by index.
      * @param int $timeout Timeout in ms.
@@ -62,13 +64,13 @@ class PHPRedis implements Queue {
      * @return Task A task from on of the provided channels. 
      *              null if no Task was available.
      */
-    public function pop(array $channels, $timeout = 2000)
+    public function get(array $channels, $timeout = 2000)
     {
         $now = time();
 
         while(time() < $now + $timeout) {
             $item = $this->client->evalSHA(
-                self::$scriptSHAs['pop'],
+                self::$scriptSHAs['get'],
                 array_merge($channels, array('worker.'.$this->workerId)),
                 // use worker_id as key in order to be prefixed correctly
                 count($channels) + 1
@@ -80,12 +82,11 @@ class PHPRedis implements Queue {
                 if ($error) {
                     throw new Exception('redis error: ' . $error);
                 }
-                  
-                if ($this->idle > 5) {
-                    $backoff = 2 * 10E5;
-                } else {
-                    $backoff = pow(2, $this->idle++) * 50000;
-                }
+
+                $sleep = pow(2, $this->idle++);
+                $backoff = $sleep > $timeout
+                    ? $timeout * 1E6
+                    : $sleep * 50000;
                 
                 usleep($backoff);
             } else if ($item) {
@@ -105,21 +106,19 @@ class PHPRedis implements Queue {
     }
 
     /**
-     * Push a new task to the queue.
-     *
-     * Use different channels for priorities or groups of workers.
+     * Put a new task into the given channel.
      *
      * @param Task $task The task to accomplish.
-     * @param string $channel Channel to push task to.
+     * @param string $channel Channel to put task to.
      *
-     * @return string The id of the pushed task.
-     * @throws Exception if the task could not be pushed.
+     * @return string The id of the added task.
+     * @throws Exception if the task could not be added.
      */
-    public function push(Task $task, $channel)
+    public function put(Task $task, $channel)
     {
         try {
             $result = $this->client->evalSHA(
-                self::$scriptSHAs['push'],
+                self::$scriptSHAs['put'],
                 array(
                     $channel,
                     'task.' . $task->getId(),

@@ -1,6 +1,5 @@
 <?php
 
-namespace Teeparty\Queue;
-
+namespace Teeparty\Client;
 
 class Exception extends \Teeparty\Exception {}

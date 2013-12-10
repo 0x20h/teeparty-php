@@ -15,14 +15,14 @@ parameters:
 
 services:
 ############################################
-# Queue configuration
+# Client configuration
 ############################################
     redis:
         class: \Redis
         calls:
             - [connect, ["%redis.host%", "%redis.port%"]]
     queue:
-        class: \Teeparty\Queue\PHPRedis
+        class: \Teeparty\Client\PHPRedis
         arguments: 
             client: @redis
             worker_id: "%worker.id%"

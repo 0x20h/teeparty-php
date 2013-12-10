@@ -6,7 +6,7 @@ use Teeparty\Task\Result;
 /**
  * Interface for queue implementations.
  */
-interface Queue {
+interface Client {
     /**
      * Retrieve a new task from the queue.
      *
@@ -14,9 +14,9 @@ interface Queue {
      * @param int $timeout timeout for listening for new items.
      *
      * @return array Task, channel. null if no task is pending.
-     * @throws Teeparty\Queue\Exception If the Task could not be fetched.
+     * @throws Teeparty\Client\Exception If the Task could not be fetched.
      */
-    public function pop(array $channels, $timeout = 0);
+    public function get(array $channels, $timeout = 0);
 
     /**
      * Put a new Task into the queue.
@@ -25,9 +25,9 @@ interface Queue {
      * @param string $channel put task into the given channel.
      * 
      * @return string The Task ID.
-     * @throws Teeparty\Queue\Exception If the Task could not be pushed.
+     * @throws Teeparty\Client\Exception If the Task could not be pushed.
      */
-    public function push(Task $task, $channel);
+    public function put(Task $task, $channel);
 
 
     /**
