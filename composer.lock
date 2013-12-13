@@ -11,7 +11,7 @@
             "source": {
                 "type": "git",
                 "url": "ssh://knotter@kohlhof-webservices.de:664/~/dev/teeparty-schema.git",
-                "reference": "9810da577778436818656cee18f6cab50fd79dd5"
+                "reference": "94b4f8c6766c6a34eb7eaeb55e48b1bff00fb432"
             },
             "require": {
                 "justinrainbow/json-schema": "1.3.*",
@@ -36,20 +36,20 @@
                 }
             ],
             "description": "teeparty message schemas",
-            "time": "2013-12-10 19:45:13"
+            "time": "2013-12-12 23:04:15"
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "1.3.4",
+            "version": "1.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/justinrainbow/json-schema.git",
-                "reference": "ad8b959e5962624004738d50a2d8e83c5668e143"
+                "reference": "01949f6d2130e9737ffae5d3952909a8de70d114"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/ad8b959e5962624004738d50a2d8e83c5668e143",
-                "reference": "ad8b959e5962624004738d50a2d8e83c5668e143",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/01949f6d2130e9737ffae5d3952909a8de70d114",
+                "reference": "01949f6d2130e9737ffae5d3952909a8de70d114",
                 "shasum": ""
             },
             "require": {
@@ -104,7 +104,7 @@
                 "json",
                 "schema"
             ],
-            "time": "2013-12-08 21:17:57"
+            "time": "2013-12-13 15:21:04"
         },
         {
             "name": "monolog/monolog",

@@ -7,8 +7,8 @@ parameters:
 # prefix for all keys (e.g. you have multiple teeparty apps on one server)
     redis.prefix: app.
 
-# timeout when waiting for a new item from the queues
-    queue.pop.timeout: 3
+# timeout when waiting for a new items
+    client.get.timeout: 3
 
 # This parameter will be set when invoking the worker console
 #   worker.id: foo
@@ -21,7 +21,7 @@ services:
         class: \Redis
         calls:
             - [connect, ["%redis.host%", "%redis.port%"]]
-    queue:
+    client:
         class: \Teeparty\Client\PHPRedis
         arguments: 
             client: @redis

@@ -24,6 +24,7 @@ namespace Teeparty\Client;
 
 use Teeparty\Job;
 use Teeparty\Task;
+use Teeparty\Redis\Lua;
 
 Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
 
@@ -43,8 +44,9 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
     }
 
 
-    public function testPop()
+    public function testGet()
     {
+        $lua = new Lua;
         $job = $this->getMock('Teeparty\Job');
         $this->assumeClientConnected();
         $queue = new \Teeparty\Client\PHPRedis($this->client, 'a3d3');
@@ -53,7 +55,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $this->client->expects($this->once())
             ->method('evalSHA')
             ->with(
-                $this->equalTo('get'), 
+                $this->equalTo($lua->getSha1('task/get')),
                 $this->equalTo(array('chanA','chanB', 'worker.a3d3')), 
                 $this->equalTo(3)
             )
@@ -64,15 +66,16 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
     }
 
 
-    public function testPopWithInvalidChannels()
+    public function testGetWithInvalidChannels()
     {
         $this->assumeClientConnected();
         $queue = new \Teeparty\Client\PHPRedis($this->client, '223s');
     }
 
 
-    public function testPushTaskSuccess()
+    public function testPutTaskSuccess()
     {
+        $lua = new Lua;
         $this->assumeClientConnected();
         $queue = new \Teeparty\Client\PHPRedis($this->client, '23ss');
 
@@ -81,7 +84,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $this->client->expects($this->once())
             ->method('evalSHA')
             ->with(
-                $this->equalTo('put'), 
+                $this->equalTo($lua->getSha1('task/put')),
                 $this->equalTo(array(
                     'foo', 
                     'task.' . $task->getId(), 
@@ -98,8 +101,9 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException Teeparty\Client\Exception foo
      */
-    public function testPushTaskException()
+    public function testPutTaskException()
     {
+        $lua = new Lua;
         $this->assumeClientConnected();
         $queue = new \Teeparty\Client\PHPRedis($this->client, '23ss');
 
@@ -108,7 +112,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $this->client->expects($this->once())
             ->method('evalSHA')
             ->with(
-                $this->equalTo('put'), 
+                $this->equalTo($lua->getSha1('task/put')),
                 $this->equalTo(array(
                     'foo', 
                     'task.' . $task->getId(), 
@@ -129,18 +133,5 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $this->client->expects($this->once())
             ->method('isConnected')
             ->will($this->returnValue(true));
-
-        // ctor setup, register scripts
-        $this->client->expects($this->at(1))
-            ->method('multi')
-            ->will($this->returnValue($this->client));
-
-        $this->client->expects($this->any())
-            ->method('script')
-            ->with($this->equalTo('load'));
-
-        $this->client->expects($this->once())
-            ->method('exec')
-            ->will($this->returnValue(array('ack', 'get','put')));
     }
 }

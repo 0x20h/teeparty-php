@@ -52,6 +52,7 @@ class Worker extends Command {
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         pcntl_signal(SIGTERM, array($this, 'handleSignal'));
+        pcntl_signal(SIGINT, array($this, 'handleSignal'));
 
         try {
             $this->id = $input->getArgument('WORKER_ID');
@@ -73,8 +74,8 @@ class Worker extends Command {
     private function loop(array $channels, $loops = 0)
     {
         $i = 0;
-        $queue = $this->container->get('queue');
-        $timeout = $this->container->getParameter('queue.pop.timeout');
+        $client = $this->container->get('client');
+        $timeout = $this->container->getParameter('client.get.timeout');
         $log = $this->container->get('log');
 
         $prefix = $this->container->getParameter('redis.prefix');
@@ -85,7 +86,7 @@ class Worker extends Command {
             $task = null;
 
             try {
-                $task = $queue->pop($channels, $timeout);
+                $task = $client->get($channels, $timeout);
                 $this->exceptionBackoff = 0;
             } catch (\Exception $e) {
                 $log->error($e->getMessage(), $e->getTrace());
@@ -101,7 +102,7 @@ class Worker extends Command {
             $log->debug('finished task ' . $task->getId() . ' in ' .
                 $result->getExecutionTime(), (array)$result->getResult());
             // report task results
-            $queue->ack($result);
+            $client->ack($result);
         }
     }
 
@@ -114,11 +115,12 @@ class Worker extends Command {
     public function handleSignal($signal)
     {
         $log = $this->container->get('log');
-        $log->info('got signal '.$signal);
+        $log->debug('received signal '.$signal);
         
         switch($signal) {
-        case 15:
-            $log->info('setting worker inactive...');
+        case SIGINT:
+        case SIGTERM:
+            $log->info('shutting down...');
             $this->setActive(false);
         }
     }

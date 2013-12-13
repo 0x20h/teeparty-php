@@ -4,6 +4,7 @@ namespace Teeparty\Client;
 
 use Teeparty\Task;
 use Teeparty\Client;
+use Teeparty\Redis\Lua;
 use Teeparty\Task\Result;
 use Teeparty\Task\Factory;
 use Teeparty\Schema\Validator;
@@ -13,17 +14,9 @@ use Teeparty\Schema\Validator;
  */
 class PHPRedis implements Client {
 
-    private static $scriptSHAs = array();
-    protected static $scriptSources = array(
-        'ack' => 'ack.lua',
-        'get' => 'get.lua',
-        'put' => 'put.lua',
-    );
-
+    private $lua;
     private $client;
-
     private $validator;
-
     private $idle = 0;
 
     /**
@@ -45,12 +38,11 @@ class PHPRedis implements Client {
         $this->client = $client;
         $this->workerId = $workerId;
         $this->validator = $validator ? $validator : new Validator;
+        $this->lua = new Lua;
 
         if (!$this->client->isConnected()) {
             throw new \RuntimeException('\Redis client is not connected!');
         }
-
-        $this->scripts = $this->registerScripts();
     }
 
     /**
@@ -70,7 +62,7 @@ class PHPRedis implements Client {
 
         while(time() < $now + $timeout) {
             $item = $this->client->evalSHA(
-                self::$scriptSHAs['get'],
+                $this->lua->getSHA1('task/get'),
                 array_merge($channels, array('worker.'.$this->workerId)),
                 // use worker_id as key in order to be prefixed correctly
                 count($channels) + 1
@@ -80,6 +72,7 @@ class PHPRedis implements Client {
                 $error = $this->client->getLastError();
 
                 if ($error) {
+                    // @TODO register scripts and try again.
                     throw new Exception('redis error: ' . $error);
                 }
 
@@ -118,7 +111,7 @@ class PHPRedis implements Client {
     {
         try {
             $result = $this->client->evalSHA(
-                self::$scriptSHAs['put'],
+                $this->lua->getSHA1('task/put'),
                 array(
                     $channel,
                     'task.' . $task->getId(),
@@ -153,7 +146,7 @@ class PHPRedis implements Client {
         $taskId = $result->getTaskId();
 
         $this->client->evalSHA(
-            self::$scriptSHAs['ack'],
+            $this->lua->getSHA1('task/ack'),
             array(
                 'result.' . $taskId,
                 'task.' . $taskId,
@@ -195,21 +188,19 @@ class PHPRedis implements Client {
         ksort($return);
         return $return;
     }
+
     /**
-     * Register lua scripts and make the SHAs available via self::$scriptSHAs.
+     * Register lua scripts.
      *
      * @return bool True, if the scripts were registered successfully.
      */
     private function registerScripts()
     {
-        if (!empty(self::$scripts)) {
-            return true;
-        }
-        
+        $scripts = $lua->getScripts();
         $multi = $this->client->multi();
 
-        foreach (self::$scriptSources as $script) {
-            $multi->script('load', file_get_contents(__DIR__ . '/lua/' . $script));
+        foreach ($scripts as $script) {
+            $multi->script('load', $script);
         }
 
         $result = $multi->exec();
@@ -218,7 +209,7 @@ class PHPRedis implements Client {
             $i = 0;
             $msg = '';
 
-            foreach (self::$scriptSources as $key => $script) {
+            foreach ($scripts as $script => $source) {
                 if (!$result[$i++]) {
                     $msg .= 'Failed to register script "'. $script . '".'; 
                 }
@@ -227,11 +218,6 @@ class PHPRedis implements Client {
             throw new Exception('ERRORS: ' . $msg);
         }
 
-        self::$scriptSHAs = array_combine(
-            array_keys(self::$scriptSources), 
-            $result
-        );
-       
         return true;
     }
 }

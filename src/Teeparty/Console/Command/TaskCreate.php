@@ -89,8 +89,8 @@ class TaskCreate extends Command {
             $task = new Task($instance, $context);
             $log->info('pushing ' . $job . ' to ' . $channel, $context);
             
-            $queue = $this->container->get('queue');
-            $id = $queue->push($task, $channel);
+            $client = $this->container->get('client');
+            $id = $client->put($task, $channel);
 
             if (!$id) {
                 $log->error('failed pushing task', (array) $task);
