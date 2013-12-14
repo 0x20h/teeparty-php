@@ -14,6 +14,7 @@ use Teeparty\Schema\Validator;
  */
 class PHPRedis implements Client {
 
+    private static $scriptsRegistered = false;
     private $lua;
     private $client;
     private $validator;
@@ -61,30 +62,16 @@ class PHPRedis implements Client {
         $now = time();
 
         while(time() < $now + $timeout) {
-            $item = $this->client->evalSHA(
-                $this->lua->getSHA1('task/get'),
+            $item = $this->script(
+                'task/get',
                 array_merge($channels, array('worker.'.$this->workerId)),
                 // use worker_id as key in order to be prefixed correctly
                 count($channels) + 1
             );
-            
-            if (!$item) {
-                $error = $this->client->getLastError();
 
-                if ($error) {
-                    // @TODO register scripts and try again.
-                    throw new Exception('redis error: ' . $error);
-                }
-
-                $sleep = pow(2, $this->idle++);
-                $backoff = $sleep > $timeout
-                    ? $timeout * 1E6
-                    : $sleep * 50000;
-                
-                usleep($backoff);
-            } else if ($item) {
+            if ($item) {
                 $this->idle = 0;
-                
+
                 try {
                     $task = Task::fromJSON($item);
                     return $task;
@@ -92,7 +79,10 @@ class PHPRedis implements Client {
                     throw $e;
                 }
             }
-            
+
+            $sleep = pow(2, $this->idle++);
+            $backoff = $sleep > $timeout ? $timeout * 1E6 : $sleep * 50000;
+            usleep($backoff);
         }
 
         return null;
@@ -109,27 +99,15 @@ class PHPRedis implements Client {
      */
     public function put(Task $task, $channel)
     {
-        try {
-            $result = $this->client->evalSHA(
-                $this->lua->getSHA1('task/put'),
-                array(
-                    $channel,
-                    'task.' . $task->getId(),
-                    json_encode($task->jsonSerialize()), // 5.3 compat
-                ),
-                2
-            );
-        } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), null, $e);
-        }
-
-        if (!$result) {
-            $error = $this->client->getLastError();
-
-            if ($error) {
-                throw new Exception('redis error: ' . $error);
-            }
-        }
+        $this->script(
+            'task/put',
+            array(
+                $channel,
+                'task.' . $task->getId(),
+                json_encode($task->jsonSerialize()), // 5.3 compat
+            ),
+            2
+        );
 
         return $task->getId();
     }
@@ -196,7 +174,7 @@ class PHPRedis implements Client {
      */
     private function registerScripts()
     {
-        $scripts = $lua->getScripts();
+        $scripts = $this->lua->getScripts();
         $multi = $this->client->multi();
 
         foreach ($scripts as $script) {
@@ -219,5 +197,36 @@ class PHPRedis implements Client {
         }
 
         return true;
+    }
+
+
+    /**
+     * Run the given script.
+     */
+    protected function script($script, array $args, $numKeys)
+    {
+        try {
+            $result = $this->client->evalSHA(
+                $this->lua->getSHA1($script), $args, $numKeys
+            );
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), null, $e);
+        }
+
+        if (!$result) {
+            $error = $this->client->getLastError();
+
+            if ($error) {
+                if (!self::$scriptsRegistered) {
+                    $this->registerScripts();
+                    self::$scriptsRegistered = true;
+                    return $this->script($script, $args, $numKeys);
+                }
+
+                throw new Exception('redis error: ' . $error);
+            }
+        }
+
+        return $result;
     }
 }
