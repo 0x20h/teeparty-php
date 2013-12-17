@@ -98,12 +98,19 @@ class PHPRedis implements Client {
      */
     public function put(Task $task, $channel)
     {
+        $msg = json_encode($task->jsonSerialize()); // 5.3 compat
+
+        if (!$this->validator->validateJSON('task', $msg)) {
+            throw new Exception('Task validation failed: ' . 
+                json_encode($this->validator->getLastErrors(), true));
+        }
+
         $this->script(
             'task/put',
             array(
                 $channel,
                 'task.' . $task->getId(),
-                json_encode($task->jsonSerialize()), // 5.3 compat
+                $msg
             ),
             2
         );

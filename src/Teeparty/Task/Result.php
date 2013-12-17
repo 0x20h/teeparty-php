@@ -143,7 +143,10 @@ class Result implements \JsonSerializable {
     public static function fromJSON($json, Validator $validator = null) {
         $data = json_decode($json);
         $validator = $validator ? $validator : new Validator();
-        $validator->validate('result', $data);
+        if (!$validator->validate('result', $data)) {
+            throw new Exception('Result validation failed: ' .
+                json_encode($validator->getLastErrors()));
+        }
 
         $result = new Result(
             $data->task_id,

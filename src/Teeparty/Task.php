@@ -9,12 +9,20 @@ class Task implements \Serializable, \JsonSerializable {
     private $id;
     private $job;
     private $context;
+    private $created;
     
     public function __construct(Job $job, array $context = array(), $id = null)
     {
         $this->id = $id ? $id : uniqid(true);
         $this->job = $job;
         $this->context = $context;
+        $this->created = new \DateTime;
+    }
+
+
+    public function setCreated(\DateTime $created)
+    {
+        $this->created = $created;
     }
 
 
@@ -75,6 +83,7 @@ class Task implements \Serializable, \JsonSerializable {
             'id' => $this->id,
             'job' => get_class($this->job),
             'context' => $this->context,
+            'created' => $this->created,
         ));
     }
 
@@ -85,6 +94,7 @@ class Task implements \Serializable, \JsonSerializable {
         $this->id = $data['id'];
         $this->job = new $data['job'];
         $this->context = $data['context'];
+        $this->created = $data['created'];
     }
 
 
@@ -94,16 +104,27 @@ class Task implements \Serializable, \JsonSerializable {
             'id' => $this->id,
             'job' => get_class($this->job),
             'context' => $this->context,
+            'created' => $this->created->format(\DateTime::ISO8601)
         );
     }
 
 
     public static function fromJSON($json)
     {
-        $data = json_decode($json);
         $validator = new Validator();
-        $validator->validate('task', $data);
+        $data = json_decode($json);
 
-        return new Task(new $data->job, (array) $data->context, $data->id);
+        if(!$validator->validate('task', $data)) {
+            throw new Exception('Task validation failed: ' .
+                json_encode($validator->getLastErrors()));
+        }
+
+        $task = new Task(new $data->job, (array) $data->context, $data->id);
+        $date = new \DateTime($data->created);
+        // restore to local timezone
+        $date->setTimezone(new \DateTimezone(date_default_timezone_get()));
+        $task->setCreated($date);
+
+        return $task;
     }
 }
