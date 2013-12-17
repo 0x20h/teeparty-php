@@ -98,32 +98,32 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
     }
 
     
-    /**
-     * @expectedException Teeparty\Client\Exception foo
-     */
-    public function testPutTaskException()
-    {
-        $lua = new Lua;
-        $this->assumeClientConnected();
-        $queue = new \Teeparty\Client\PHPRedis($this->client, '23ss');
+        /**
+         * @expectedException Teeparty\Client\Exception foo
+         */
+        public function testPutTaskException()
+        {
+            $lua = new Lua;
+            $this->assumeClientConnected();
+            $queue = new \Teeparty\Client\PHPRedis($this->client, '23ss');
 
-        $task = new Task($this->getMock('Teeparty\Job'), array());
+            $task = new Task($this->getMock('Teeparty\Job'), array());
 
-        $this->client->expects($this->once())
-            ->method('evalSHA')
-            ->with(
-                $this->equalTo($lua->getSha1('task/put')),
-                $this->equalTo(array(
-                    'foo', 
-                    'task.' . $task->getId(), 
-                    json_encode($task->jsonSerialize())
-                )), 
-                $this->equalTo(2)
-            )
-            ->will($this->throwException(new \RedisException('foo')));
+            $this->client->expects($this->once())
+                ->method('evalSHA')
+                ->with(
+                    $this->equalTo($lua->getSha1('task/put')),
+                    $this->equalTo(array(
+                        'foo', 
+                        'task.' . $task->getId(), 
+                        json_encode($task->jsonSerialize())
+                    )), 
+                    $this->equalTo(2)
+                )
+                ->will($this->throwException(new \RedisException('foo')));
 
-        $queue->put($task, 'foo');
-    }
+            $queue->put($task, 'foo');
+        }
 
     /**
      * @covers registerScripts
@@ -133,5 +133,18 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $this->client->expects($this->once())
             ->method('isConnected')
             ->will($this->returnValue(true));
+        
+        $this->client->expects($this->once())
+            ->method('multi')
+            ->will($this->returnValue($this->client));
+
+        $this->client->expects($this->any())
+            ->method('script')
+            ->with($this->equalTo('load'))
+            ->will($this->returnValue('foo'));
+        
+        $this->client->expects($this->once())
+            ->method('exec')
+            ->will($this->returnValue(array('foo')));
     }
 }

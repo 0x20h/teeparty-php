@@ -14,7 +14,6 @@ use Teeparty\Schema\Validator;
  */
 class PHPRedis implements Client {
 
-    private static $scriptsRegistered = false;
     private $lua;
     private $client;
     private $validator;
@@ -174,11 +173,6 @@ class PHPRedis implements Client {
      */
     private function registerScripts()
     {
-
-        if (self::$scriptsRegistered) {
-            return true;
-        }
-        
         $scripts = $this->lua->getScripts();
         $multi = $this->client->multi();
 
@@ -201,7 +195,6 @@ class PHPRedis implements Client {
             throw new Exception('ERRORS: ' . $msg);
         }
 
-        self::$scriptsRegistered = true;
         return true;
     }
 
