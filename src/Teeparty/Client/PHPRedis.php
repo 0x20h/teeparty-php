@@ -202,6 +202,12 @@ class PHPRedis implements Client {
 
     /**
      * Run the given script.
+     *
+     * @param string $script The named script
+     * @param array $args The script arguments
+     * @param int $numKeys number of keys (available as KEYS[] in lua)
+     *
+     * @return mixed Results of executing the script.
      */
     protected function script($script, array $args, $numKeys)
     {
