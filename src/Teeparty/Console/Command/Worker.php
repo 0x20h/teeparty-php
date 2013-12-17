@@ -63,21 +63,33 @@ class Worker extends Command {
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
             $this->container->setParameter('worker.id', $this->id);
+            $log = $this->container->get('log');
+
+            if (!$log) {
+                throw new Exception('unable to setup logger');
+            }
+
+            try {
+                $client = $this->container->get('client');
+            } catch (\Exception $e) {
+                $log->emergency($e->getMessage(), $e->getTrace());
+                throw $e;
+            }
+
             $this->loop($channels, $loops);
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
-            exit(1);
+            exit(2);
         }
-        
     }
+
 
     private function loop(array $channels, $loops = 0)
     {
         $i = 0;
-        $client = $this->container->get('client');
         $timeout = $this->container->getParameter('client.get.timeout');
         $log = $this->container->get('log');
-
+        $client = $this->container->get('client');
         $prefix = $this->container->getParameter('redis.prefix');
         $log->debug('global namespace used for redis keys: ' . $prefix);
         $log->info('Listening on channels: ' . implode(',', $channels));
@@ -90,7 +102,13 @@ class Worker extends Command {
                 $this->exceptionBackoff = 0;
             } catch (\Exception $e) {
                 $log->error($e->getMessage(), $e->getTrace());
-                usleep(min(pow(2, $this->exceptionBackoff++ + 10), 2 * 1E6));
+
+                if ($this->exceptionBackoff > 10) {
+                    $log->emergency('exiting due to 10 consecutive exceptions');
+                    exit(1);
+                }
+                
+                usleep(min(pow(2, $this->exceptionBackoff++ + 15), 3 * 1E6));
             }
 
             if (empty($task)) {
@@ -99,8 +117,9 @@ class Worker extends Command {
 
             $log->info('executing task ' . $task->getId(), $task->getContext());
             $result = $task->execute();
-            $log->debug('finished task ' . $task->getId() . ' in ' .
-                $result->getExecutionTime(), (array)$result->getResult());
+            $log->debug('[' . strtoupper($result->getStatus()) . '] finished ' .
+                'task ' . $task->getId() . ' in ' .
+                $result->getExecutionTime(), (array) $result->getResult());
             // report task results
             $client->ack($result);
         }
@@ -112,16 +131,20 @@ class Worker extends Command {
         $this->active = (bool) $bool;
     }
 
+
     public function handleSignal($signal)
     {
         $log = $this->container->get('log');
-        $log->debug('received signal '.$signal);
-        
+        $log->debug('received signal ' . $signal);
+
         switch($signal) {
-        case SIGINT:
-        case SIGTERM:
-            $log->info('shutting down...');
-            $this->setActive(false);
+            case SIGINT:
+            case SIGTERM:
+                $log->info('shutting down...');
+                $this->setActive(false);
+                break;
+            default:
+                $log->info('unhandled signal: ' . $signal);
         }
     }
 }
