@@ -31,19 +31,17 @@ class PHPRedis implements Client {
      */
     private $workerId;
     
-    public function __construct(
-        \Redis $client,
-        $workerId,
-        Validator $validator = null)
+    public function __construct(\Redis $client, $workerId)
     {
         $this->client = $client;
         $this->workerId = $workerId;
-        $this->validator = $validator ? $validator : new Validator;
-        $this->lua = new Lua;
 
         if (!$this->client->isConnected()) {
             throw new \RuntimeException('\Redis client is not connected!');
         }
+
+        $this->validator = new Validator;
+        $this->lua = new Lua;
     }
 
     /**
