@@ -42,6 +42,8 @@ class PHPRedis implements Client {
 
         $this->validator = new Validator;
         $this->lua = new Lua;
+
+        $this->registerScripts();
     }
 
     /**
@@ -172,6 +174,11 @@ class PHPRedis implements Client {
      */
     private function registerScripts()
     {
+
+        if (self::$scriptsRegistered) {
+            return true;
+        }
+        
         $scripts = $this->lua->getScripts();
         $multi = $this->client->multi();
 
@@ -194,12 +201,13 @@ class PHPRedis implements Client {
             throw new Exception('ERRORS: ' . $msg);
         }
 
+        self::$scriptsRegistered = true;
         return true;
     }
 
 
     /**
-     * Run the given script.
+     * Run the named lua script.
      *
      * @param string $script The named script
      * @param array $args The script arguments
@@ -221,12 +229,6 @@ class PHPRedis implements Client {
             $error = $this->client->getLastError();
 
             if ($error) {
-                if (!self::$scriptsRegistered) {
-                    $this->registerScripts();
-                    self::$scriptsRegistered = true;
-                    return $this->script($script, $args, $numKeys);
-                }
-
                 throw new Exception('redis error: ' . $error);
             }
         }
