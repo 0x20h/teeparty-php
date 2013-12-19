@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "83e064bdc6f1275ca035c37795fa5f65",
+    "hash": "e4628e4fed7d5b6402b9672dad446c67",
     "packages": [
         {
             "name": "0x20h/teeparty-schema",
@@ -93,7 +93,7 @@
                     "email": "justin.rainbow@gmail.com"
                 },
                 {
-                    "name": "Robert Schönthal",
+                    "name": "Robert Sch\u00f6nthal",
                     "email": "seroscho@googlemail.com",
                     "homepage": "http://digitalkaoz.net"
                 }
@@ -841,7 +841,8 @@
     },
     "platform": {
         "php": ">=5.3.0",
-        "ext-redis": "2.2.4"
+        "ext-redis": "2.2.4",
+        "ext-pcntl": "*"
     },
     "platform-dev": [
 
