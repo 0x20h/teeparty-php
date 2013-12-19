@@ -59,7 +59,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Result::STATUS_EXCEPTION, $result->getStatus());
         $this->assertEquals($result->getResult(), $e);
 
-        $fromJSON = json_decode(json_encode($result), true);
+        $fromJSON = json_decode(json_encode($result->jsonSerialize()), true);
         $this->assertEquals($fromJSON['status'], Result::STATUS_EXCEPTION);
         $this->assertEquals($fromJSON['task_id'], $task->getId());
         $this->assertEquals($fromJSON['returnValue']['message'], 'exception');

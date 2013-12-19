@@ -2,12 +2,13 @@
 namespace Teeparty\Task;
 
 use Teeparty\Task;
+use Teeparty\JsonSerializable;
 use Teeparty\Schema\Validator;
 
 /**
  * Represent task returnValues and status information.
  */
-class Result implements \JsonSerializable {
+class Result implements JsonSerializable {
 
     const STATUS_OK = 'ok';
     const STATUS_FAILED = 'failed';
@@ -112,7 +113,9 @@ class Result implements \JsonSerializable {
                 $this->getStartDate()->format(\DateTime::ATOM) :
                 null,
             'execution_time' => $this->getExecutionTime(),
-            'returnValue' => $this->getResult()
+            'returnValue' => is_object($this->returnValue)  // PHP 5.3 compat
+                ? $this->returnValue->jsonSerialize()
+                : $this->returnValue
         );
     }
 
@@ -169,7 +172,7 @@ class Result implements \JsonSerializable {
             }
         }
 
-        if (is_object($data) && !($data instanceof \JsonSerializable)) {
+        if (is_object($data) && !($data instanceof JsonSerializable)) {
             throw new Exception('cannot store object of type '.get_class($data));
         }
     }

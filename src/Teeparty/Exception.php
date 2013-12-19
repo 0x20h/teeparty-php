@@ -22,7 +22,7 @@
  */
 namespace Teeparty;
 
-class Exception extends \Exception implements \JsonSerializable {
+class Exception extends \Exception implements JsonSerializable {
 
     public function jsonSerialize()
     {

@@ -44,7 +44,7 @@ Class TaskTest extends \PHPUnit_Framework_TestCase {
     {
         $job = $this->getMock('\Teeparty\Job');
         $t = new Task($job, array('foo' => 'bar'));
-        $msg = json_encode($t);
+        $msg = json_encode($t->jsonSerialize()); // PHP 5.3 compat
         $t2 = Task::fromJSON($msg);
         $this->assertEquals($t, $t2);
     }

@@ -2,9 +2,10 @@
 namespace Teeparty;
 
 use Teeparty\Task\Result;
+use Teeparty\JsonSerializable;
 use Teeparty\Schema\Validator;
 
-class Task implements \Serializable, \JsonSerializable {
+class Task implements \Serializable, JsonSerializable {
 
     private $id;
     private $job;

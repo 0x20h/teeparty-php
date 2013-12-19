@@ -50,7 +50,8 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $job = $this->getMock('Teeparty\Job');
         $this->assumeClientConnected();
         $queue = new \Teeparty\Client\PHPRedis($this->client, 'a3d3');
-        $msg = json_encode(new Task($job, array()));
+        $task = new Task($job, array());
+        $msg = json_encode($task->jsonSerialize());
         
         $this->client->expects($this->once())
             ->method('evalSHA')
@@ -62,7 +63,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
             ->will($this->returnValue($msg));
         
         $task = $queue->get(array('chanA', 'chanB'), 3);
-        $this->assertEquals($msg, json_encode($task));
+        $this->assertEquals($msg, json_encode($task->jsonSerialize()));
     }
 
 
