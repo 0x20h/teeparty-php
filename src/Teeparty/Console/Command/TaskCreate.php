@@ -67,9 +67,9 @@ class TaskCreate extends Command {
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
             $this->container->setParameter('worker.id', $this->id);
-
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
+            exit(1);
         }
 
         try {
@@ -99,7 +99,7 @@ class TaskCreate extends Command {
                 $log->info('Pushed task: '.$task->getId());
             }
         } catch (\Exception $e) {
-            $log->error($e->getMessage(), $e->getTrace());
+            $log->emergency($e->getMessage(), $e->getTrace());
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);
         }
