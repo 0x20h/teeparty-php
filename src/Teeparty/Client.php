@@ -14,13 +14,13 @@ interface Client {
      * task is pending, the method returns null after $timeout msecs. The first 
      * task that is obtained by one of the channels is returned.
      *
-     * @param string[] $channels channels to pop from
+     * @param string $channel Channel to get the next item from.
      * @param int $timeout timeout for listening for new items.
      *
      * @return array Task, channel. null if no task is pending.
      * @throws Teeparty\Client\Exception If the Task could not be fetched.
      */
-    public function get(array $channels, $timeout = 0);
+    public function get($channel, $timeout = 0);
 
     /**
      * Put a new Task into the channel.

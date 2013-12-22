@@ -30,9 +30,9 @@ class Worker extends Command {
                 'Worker ID'
             )
             ->addArgument(
-                'CHANNELS',
-                InputArgument::REQUIRED | InputArgument::IS_ARRAY,
-                'configuration file'
+                'CHANNEL',
+                InputArgument::REQUIRED,
+                'Channel to fetch tasks from.'
             )
             ->addOption(
                 'loops', 

@@ -59,16 +59,15 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
                 $this->equalTo($lua->getSha1('task/get')),
                 $this->equalTo(array(
                     'chanA',
-                    'chanB',
                     'pending',
                     'processing',
                     'worker.a3d3'
                 )),
-                $this->equalTo(5)
+                $this->equalTo(4)
             )
             ->will($this->returnValue($msg));
 
-        $task = $queue->get(array('chanA', 'chanB'), 3);
+        $task = $queue->get('chanA', 3);
         $this->assertEquals($msg, json_encode($task->jsonSerialize()));
     }
 

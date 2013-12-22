@@ -45,34 +45,30 @@ class PHPRedis implements Client {
         $this->registerScripts();
     }
 
+
     /**
      * Get a task from one of the given channels.
      *
-     * Also assign workerId to the received task.
-     *
-     * @param array $channels Channels to fetch a task from, prioritized by index.
+     * @param array $channel Channel to fetch a task from.
      * @param int $timeout Timeout in ms.
      *
      * @return Task A task from on of the provided channels.
      *              null if no Task was available.
      */
-    public function get(array $channels, $timeout = 2000)
+    public function get($channel, $timeout = 2000)
     {
         $now = time();
 
         while(time() < $now + $timeout) {
             $item = $this->script(
                 'task/get',
-                array_merge(
-                    $channels, 
-                    array(
-                        'pending',
-                        'processing',
-                        'worker.'.$this->workerId,
-                    )
+                array(
+                    $channel, 
+                    'pending',
+                    'processing',
+                    'worker.'.$this->workerId,
                 ),
-                // use worker_id as key in order to be prefixed correctly
-                count($channels) + 3
+                4
             );
 
             if ($item) {
