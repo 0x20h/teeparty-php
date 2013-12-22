@@ -29,7 +29,7 @@ class PHPRedis implements Client {
      * @var string
      */
     private $workerId;
-    
+
     public function __construct(\Redis $client, $workerId)
     {
         $this->client = $client;
@@ -53,7 +53,7 @@ class PHPRedis implements Client {
      * @param array $channels Channels to fetch a task from, prioritized by index.
      * @param int $timeout Timeout in ms.
      *
-     * @return Task A task from on of the provided channels. 
+     * @return Task A task from on of the provided channels.
      *              null if no Task was available.
      */
     public function get(array $channels, $timeout = 2000)
@@ -63,9 +63,16 @@ class PHPRedis implements Client {
         while(time() < $now + $timeout) {
             $item = $this->script(
                 'task/get',
-                array_merge($channels, array('worker.'.$this->workerId)),
+                array_merge(
+                    $channels, 
+                    array(
+                        'pending',
+                        'processing',
+                        'worker.'.$this->workerId,
+                    )
+                ),
                 // use worker_id as key in order to be prefixed correctly
-                count($channels) + 1
+                count($channels) + 3
             );
 
             if ($item) {
@@ -101,7 +108,7 @@ class PHPRedis implements Client {
         $msg = json_encode($task->jsonSerialize()); // 5.3 compat
 
         if (!$this->validator->validateJSON('task', $msg)) {
-            throw new Exception('Task validation failed: ' . 
+            throw new Exception('Task validation failed: ' .
                 json_encode($this->validator->getLastErrors(), true));
         }
 
@@ -110,20 +117,21 @@ class PHPRedis implements Client {
             array(
                 $channel,
                 'task.' . $task->getId(),
+                'pending',
                 $msg
             ),
-            2
+            3
         );
 
         return $task->getId();
     }
 
-    
+
     /**
      * Ack/Nack task results.
      *
      * @param Result $result The task result to ack.
-     * 
+     *
      */
     public function ack(Result $result)
     {
@@ -134,16 +142,18 @@ class PHPRedis implements Client {
             array(
                 'result.' . $taskId,
                 'task.' . $taskId,
+                'pending',
+                'finished',
                 json_encode($result->jsonSerialize()), // 5.3 compat
             ),
-            2
+            4
         );
     }
 
     /**
      * Set a global prefix for keys.
      *
-     * A good use case for this is when you have different 
+     * A good use case for this is when you have different
      * applications on the same redis instance.
      *
      * @param string $prefix Global prefix to use.
@@ -162,7 +172,7 @@ class PHPRedis implements Client {
         if (!$results) {
             return false;
         }
-        
+
         $return = array();
 
         foreach ($results as $key => $result) {
@@ -195,10 +205,10 @@ class PHPRedis implements Client {
 
             foreach ($scripts as $script => $source) {
                 if (!$result[$i++]) {
-                    $msg .= 'Failed to register script "'. $script . '".'; 
+                    $msg .= 'Failed to register script "'. $script . '".';
                 }
             }
-            
+
             throw new Exception('ERRORS: ' . $msg);
         }
 
