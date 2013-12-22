@@ -37,8 +37,8 @@ class TaskCreate extends Command {
                 'config',
                 'c',
                 InputOption::VALUE_REQUIRED,
-                'Configuration file to use [~/.teeparty.yml].',
-                '~/.teeparty.yml'
+                'Configuration file to use [teeparty.yml].',
+                'teeparty.yml'
             )
             ->addOption(
                 'context', 

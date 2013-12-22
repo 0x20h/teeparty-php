@@ -37,15 +37,15 @@ class Worker extends Command {
             ->addOption(
                 'loops', 
                 'l', 
-                InputOption::VALUE_OPTIONAL, 
+                InputOption::VALUE_REQUIRED, 
                 'How many loops to perform (e.g. only run N tasks)', 
                 0
             )->addOption(
                 'config',
                 'c',
                 InputOption::VALUE_REQUIRED,
-                'Configuration file to use [~/.teeparty.yml]',
-                '~/.teeparty.yml'
+                'Configuration file to use [teeparty.yml]',
+                'teeparty.yml'
             );
     }
 
