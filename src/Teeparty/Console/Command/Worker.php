@@ -56,7 +56,7 @@ class Worker extends Command {
 
         try {
             $this->id = $input->getArgument('WORKER_ID');
-            $channels = $input->getArgument('CHANNELS');
+            $channel = $input->getArgument('CHANNEL');
             $loops = $input->getOption('loops');
             $file = $input->getOption('config');
             $this->container = new ContainerBuilder();
@@ -76,7 +76,7 @@ class Worker extends Command {
                 throw $e;
             }
 
-            $this->loop($channels, $loops);
+            $this->loop($channel, $loops);
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(2);
@@ -84,7 +84,7 @@ class Worker extends Command {
     }
 
 
-    private function loop(array $channels, $loops = 0)
+    private function loop($channel, $loops = 0)
     {
         $i = 0;
         $timeout = $this->container->getParameter('client.get.timeout');
@@ -92,13 +92,13 @@ class Worker extends Command {
         $client = $this->container->get('client');
         $prefix = $this->container->getParameter('redis.prefix');
         $log->debug('global namespace used for redis keys: ' . $prefix);
-        $log->info('Listening on channels: ' . implode(',', $channels));
+        $log->info('Listening on channel: ' . $channel);
 
         while((!$loops || $i++ < $loops) && $this->active) {
             $task = null;
 
             try {
-                $task = $client->get($channels, $timeout);
+                $task = $client->get($channel, $timeout);
                 $this->exceptionBackoff = 0;
             } catch (\Exception $e) {
                 $log->error($e->getMessage(), $e->getTrace());
