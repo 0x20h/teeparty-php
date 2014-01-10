@@ -25,7 +25,7 @@ services:
         class: \Teeparty\Client\PHPRedis
         arguments: 
             client: @redis
-            worker_id: "%worker.id%"
+            client.id: "%client.id%"
         calls:
             - [setPrefix, ["%redis.prefix%"]]
 
@@ -35,8 +35,8 @@ services:
     monolog.formatter.line:
         class: \Monolog\Formatter\LineFormatter
         arguments:
-            # format: "%worker.id% %%datetime%% %%level_name%%: %%message%%\n"
-            format: "%worker.id% %%datetime%% %%level_name%%: %%message%% %%context%%\n"
+            # format: "%client.id% %%datetime%% %%level_name%%: %%message%%\n"
+            format: "%client.id% %%datetime%% %%level_name%%: %%message%% %%context%%\n"
     monolog.handler.file:
         class: \Monolog\Handler\RotatingFileHandler
         arguments:
