@@ -62,7 +62,7 @@ class Worker extends Command {
             $this->container = new ContainerBuilder();
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
-            $this->container->setParameter('worker.id', $this->id);
+            $this->container->setParameter('client.id', $this->id);
             $log = $this->container->get('log');
 
             if (!$log) {
@@ -87,7 +87,7 @@ class Worker extends Command {
     private function loop($channel, $loops = 0)
     {
         $i = 0;
-        $timeout = $this->container->getParameter('client.get.timeout');
+        $timeout = $this->container->getParameter('client.timeout');
         $log = $this->container->get('log');
         $client = $this->container->get('client');
         $prefix = $this->container->getParameter('redis.prefix');
