@@ -29,9 +29,9 @@ namespace Teeparty\Job;
 use Teeparty\Job;
 
 /**
- * This job simply returns its arguments.
+ * This job tests failures, delays, etc.
  */
-class Pong implements Job {
+class Test implements Job {
 
     public function __construct() {}
 
