@@ -1,6 +1,6 @@
 <?php
 
-namespace Teeparty\Console\Command;
+namespace Teeparty\Console\Command\Task;
 
 use Teeparty\Task;
 use Symfony\Component\Config\FileLocator;
@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 
-class TaskCreate extends Command {
+class Create extends Command {
     
     private $id;
     private $container;
@@ -66,7 +66,7 @@ class TaskCreate extends Command {
             $this->container = new ContainerBuilder();
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
-            $this->container->setParameter('worker.id', $this->id);
+            $this->container->setParameter('client.id', $this->id);
         } catch (\Exception $e) {
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);
@@ -99,7 +99,6 @@ class TaskCreate extends Command {
                 $log->info('Pushed task: '.$task->getId());
             }
         } catch (\Exception $e) {
-            $log->emergency($e->getMessage(), $e->getTrace());
             $output->writeln('<error>'.$e->getMessage().'</error>');
             exit(1);
         }

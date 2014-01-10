@@ -3,12 +3,12 @@
 require dirname(__DIR__).'/vendor/autoload.php';
 
 use Teeparty\Console\Command\Worker;
-use Teeparty\Console\Command\Result;
-use Teeparty\Console\Command\TaskCreate;
+use Teeparty\Console\Command\Task\Result as TaskResult;
+use Teeparty\Console\Command\Task\Create as TaskCreate;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
-$application->add(new Result);
+$application->add(new TaskResult);
 $application->add(new TaskCreate);
 $application->add(new Worker);
 $application->run();

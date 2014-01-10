@@ -1,6 +1,6 @@
 <?php
 
-namespace Teeparty\Console\Command;
+namespace Teeparty\Console\Command\Task;
 
 use Teeparty\Task\Factory;
 use Symfony\Component\Config\FileLocator;
