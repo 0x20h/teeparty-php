@@ -57,12 +57,12 @@ class Result extends Command {
             $this->container = new ContainerBuilder();
             $loader = new YamlFileLoader($this->container, new FileLocator(dirname($file)));
             $loader->load(basename($file));
-            $this->container->setParameter('worker.id', $this->id);
+            $this->container->setParameter('client.id', $this->id);
 
             $log = $this->container->get('log');
-            $queue = $this->container->get('queue');
+            $client = $this->container->get('client');
 
-            $results = $queue->result($taskId);
+            $results = $client->result($taskId);
             
             if (!$results) {
                 $log->error('No results found for ' . $taskId);
