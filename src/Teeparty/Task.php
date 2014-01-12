@@ -7,23 +7,48 @@ use Teeparty\Schema\Validator;
 
 class Task implements \Serializable, JsonSerializable {
 
-    private $id;
+    private static $meta_keys = array('id' ,'created');
     private $job;
     private $context;
-    private $created;
-    
-    public function __construct(Job $job, array $context = array(), $id = null)
+    private $meta = array();
+
+public function __construct(
+        Job $job,
+        array $context = array(),
+        array $meta = array())
     {
-        $this->id = $id ? $id : uniqid(true);
         $this->job = $job;
         $this->context = $context;
-        $this->created = new \DateTime;
+
+        $this->meta($meta);
     }
 
 
-    public function setCreated(\DateTime $created)
+    /**
+     * Set and/or retrieve task meta information.
+     *
+     * @param array $meta Meta information hash.
+     * @return array current (updated) meta information.
+     */
+    public function meta(array $meta = array())
     {
-        $this->created = $created;
+        if (!empty($meta)) {
+            foreach (self::$meta_keys as $key) {
+                $this->meta[$key] = isset($meta[$key]) ? $meta[$key] : null;
+            }
+        }
+
+        // set required values
+
+        if (empty($this->meta['id'])) {
+            $this->meta['id'] = uniqid();
+        }
+
+        if (empty($this->meta['created'])) {
+            $this->meta['created'] = date('c');
+        }
+
+        return $this->meta;
     }
 
 
@@ -34,7 +59,7 @@ class Task implements \Serializable, JsonSerializable {
      */
     public function getId()
     {
-        return $this->id;
+        return $this->meta['id'];
     }
 
 
@@ -46,8 +71,8 @@ class Task implements \Serializable, JsonSerializable {
     public function getContext() {
         return $this->context;
     }
-    
-    
+
+
     public function getName()
     {
         return $this->job->getName() . '@' . $this->getId();
@@ -81,10 +106,9 @@ class Task implements \Serializable, JsonSerializable {
     public function serialize()
     {
         return serialize(array(
-            'id' => $this->id,
             'job' => get_class($this->job),
             'context' => $this->context,
-            'created' => $this->created,
+            'meta' => $this->meta,
         ));
     }
 
@@ -92,20 +116,18 @@ class Task implements \Serializable, JsonSerializable {
     public function unserialize($data)
     {
         $data = unserialize($data);
-        $this->id = $data['id'];
         $this->job = new $data['job'];
         $this->context = $data['context'];
-        $this->created = $data['created'];
+        $this->meta = $data['meta'];
     }
 
 
     public function jsonSerialize()
     {
         return array(
-            'id' => $this->id,
             'job' => get_class($this->job),
             'context' => $this->context,
-            'created' => $this->created->format(\DateTime::ISO8601)
+            'meta' => $this->meta()
         );
     }
 
@@ -120,11 +142,11 @@ class Task implements \Serializable, JsonSerializable {
                 json_encode($validator->getLastErrors()));
         }
 
-        $task = new Task(new $data->job, (array) $data->context, $data->id);
-        $date = new \DateTime($data->created);
-        // restore to local timezone
-        $date->setTimezone(new \DateTimezone(date_default_timezone_get()));
-        $task->setCreated($date);
+        $task = new Task(
+            new $data->job,
+            (array) $data->context,
+            (array) $data->meta
+        );
 
         return $task;
     }
