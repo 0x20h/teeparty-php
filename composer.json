@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"repositories": [{
 		"type": "vcs",
-		"url": "ssh://knotter@kohlhof-webservices.de:664/~/dev/teeparty-schema.git"
+		"url": "https://github.com/0x20h/teeparty-core.git"
 	}],
 	"authors": [{
 		"name": "0x20h",
@@ -22,12 +22,10 @@
 		"symfony/config": "2.3.*",
 		"symfony/dependency-injection": "2.3.*",
 		"monolog/monolog": "1.7.*",
-		"0x20h/teeparty-schema": "dev-master"
+		"0x20h/teeparty-core": "dev-master"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "3.7.*"
-	},
-	"suggests": {
 	},
 	"autoload": {
 		"psr-0": {"Teeparty": "src/"}

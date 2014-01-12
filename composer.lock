@@ -3,15 +3,21 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e4628e4fed7d5b6402b9672dad446c67",
+    "hash": "222b8cadda559133159808edaea7aa97",
     "packages": [
         {
-            "name": "0x20h/teeparty-schema",
+            "name": "0x20h/teeparty-core",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "ssh://knotter@kohlhof-webservices.de:664/~/dev/teeparty-schema.git",
-                "reference": "b1e33d8690e602e07a953626c5bbdd01275c6062"
+                "url": "https://github.com/0x20h/teeparty-core.git",
+                "reference": "716fe7f85826d503891e7b2e5ae0f4bd03dc0f6c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/0x20h/teeparty-core/zipball/716fe7f85826d503891e7b2e5ae0f4bd03dc0f6c",
+                "reference": "716fe7f85826d503891e7b2e5ae0f4bd03dc0f6c",
+                "shasum": ""
             },
             "require": {
                 "justinrainbow/json-schema": "1.3.*",
@@ -35,8 +41,12 @@
                     "email": "kohj@informatik.uni-marburg.de"
                 }
             ],
-            "description": "teeparty message schemas",
-            "time": "2013-12-22 06:55:00"
+            "description": "teeparty message schemas, validator impl and lua scripts.",
+            "support": {
+                "source": "https://github.com/0x20h/teeparty-core/tree/master",
+                "issues": "https://github.com/0x20h/teeparty-core/issues"
+            },
+            "time": "2014-01-12 20:24:33"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -213,17 +223,17 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.3.8",
+            "version": "v2.3.9",
             "target-dir": "Symfony/Component/Config",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Config.git",
-                "reference": "134c179604862ee7a19509e9c6286376e6fdbddf"
+                "reference": "07de913115aff40a3408cde77dc2b41bf2ce47e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Config/zipball/134c179604862ee7a19509e9c6286376e6fdbddf",
-                "reference": "134c179604862ee7a19509e9c6286376e6fdbddf",
+                "url": "https://api.github.com/repos/symfony/Config/zipball/07de913115aff40a3408cde77dc2b41bf2ce47e4",
+                "reference": "07de913115aff40a3408cde77dc2b41bf2ce47e4",
                 "shasum": ""
             },
             "require": {
@@ -257,21 +267,21 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "http://symfony.com",
-            "time": "2013-11-25 14:49:41"
+            "time": "2014-01-01 07:52:14"
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.8",
+            "version": "v2.3.9",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "15031c5ca7583997de218c1f5b1b406f621d18c3"
+                "reference": "1a52318149de4167cd722233323507415169261f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/15031c5ca7583997de218c1f5b1b406f621d18c3",
-                "reference": "15031c5ca7583997de218c1f5b1b406f621d18c3",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/1a52318149de4167cd722233323507415169261f",
+                "reference": "1a52318149de4167cd722233323507415169261f",
                 "shasum": ""
             },
             "require": {
@@ -310,21 +320,21 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2013-12-15 18:46:51"
+            "time": "2014-01-01 07:52:14"
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v2.3.8",
+            "version": "v2.3.9",
             "target-dir": "Symfony/Component/DependencyInjection",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/DependencyInjection.git",
-                "reference": "aa7aed820c906cc638734d347307eb179d4b0d73"
+                "reference": "001bf15816c99da8e41a5d90aadd099e10420657"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/aa7aed820c906cc638734d347307eb179d4b0d73",
-                "reference": "aa7aed820c906cc638734d347307eb179d4b0d73",
+                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/001bf15816c99da8e41a5d90aadd099e10420657",
+                "reference": "001bf15816c99da8e41a5d90aadd099e10420657",
                 "shasum": ""
             },
             "require": {
@@ -366,21 +376,21 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "http://symfony.com",
-            "time": "2013-12-02 06:43:49"
+            "time": "2014-01-01 07:52:14"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.4.0",
+            "version": "v2.4.1",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Filesystem.git",
-                "reference": "79acd777762e81d0f3414ca25a602deeeb48240d"
+                "reference": "b3c3b5a8108b3e5d604dc23241b4ea84a067fc78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/79acd777762e81d0f3414ca25a602deeeb48240d",
-                "reference": "79acd777762e81d0f3414ca25a602deeeb48240d",
+                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/b3c3b5a8108b3e5d604dc23241b4ea84a067fc78",
+                "reference": "b3c3b5a8108b3e5d604dc23241b4ea84a067fc78",
                 "shasum": ""
             },
             "require": {
@@ -413,21 +423,21 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "http://symfony.com",
-            "time": "2013-11-16 15:13:54"
+            "time": "2013-12-31 13:43:26"
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.8",
+            "version": "v2.3.9",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "5fc7c047f9498028dd1c5031f14ae76a7aef283c"
+                "reference": "490c1c47049aa3ffab9ed6295a7b3a0e809e8519"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/5fc7c047f9498028dd1c5031f14ae76a7aef283c",
-                "reference": "5fc7c047f9498028dd1c5031f14ae76a7aef283c",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/490c1c47049aa3ffab9ed6295a7b3a0e809e8519",
+                "reference": "490c1c47049aa3ffab9ed6295a7b3a0e809e8519",
                 "shasum": ""
             },
             "require": {
@@ -460,7 +470,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-11-25 14:49:41"
+            "time": "2013-12-28 07:46:05"
         }
     ],
     "packages-dev": [
@@ -837,7 +847,7 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "0x20h/teeparty-schema": 20
+        "0x20h/teeparty-core": 20
     },
     "platform": {
         "php": ">=5.3.0",
