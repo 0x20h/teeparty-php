@@ -3,7 +3,8 @@
 <phpunit bootstrap="tests/bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="Teeparty Test Suite">
-            <directory>tests/Teeparty/</directory>
+            <directory>tests/unit/Teeparty/</directory>
+            <directory>tests/integration/Teeparty/</directory>
         </testsuite>
     </testsuites>
 
