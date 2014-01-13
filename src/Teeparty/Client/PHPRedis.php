@@ -127,6 +127,7 @@ class PHPRedis implements Client {
             $this->lua->getSHA1('task/ack'),
             array(
                 $this->prefix,
+                $this->workerId,
                 $taskId,
                 json_encode($result->jsonSerialize()),
             ), // 5.3 compat
