@@ -14,6 +14,7 @@ use Teeparty\Schema\Validator;
  */
 class PHPRedis implements Client {
 
+    private $prefix = '';
     private $lua;
     private $client;
     private $validator;
@@ -62,13 +63,8 @@ class PHPRedis implements Client {
         while(time() < $now + $timeout) {
             $item = $this->script(
                 'task/get',
-                array(
-                    $channel, 
-                    'pending',
-                    'processing',
-                    'worker.'.$this->workerId,
-                ),
-                4
+                array($this->prefix, $channel, $this->workerId),
+                0
             );
 
             if ($item) {
@@ -110,13 +106,8 @@ class PHPRedis implements Client {
 
         $this->script(
             'task/put',
-            array(
-                $channel,
-                'task.' . $task->getId(),
-                'pending',
-                $msg
-            ),
-            3
+            array($this->prefix, $channel, $task->getId(), $msg),
+            0
         );
 
         return $task->getId();
@@ -124,10 +115,9 @@ class PHPRedis implements Client {
 
 
     /**
-     * Ack/Nack task results.
+     * Ack task results.
      *
      * @param Result $result The task result to ack.
-     *
      */
     public function ack(Result $result)
     {
@@ -136,13 +126,11 @@ class PHPRedis implements Client {
         $this->client->evalSHA(
             $this->lua->getSHA1('task/ack'),
             array(
-                'result.' . $taskId,
-                'task.' . $taskId,
-                'pending',
-                'finished',
-                json_encode($result->jsonSerialize()), // 5.3 compat
-            ),
-            4
+                $this->prefix,
+                $taskId,
+                json_encode($result->jsonSerialize()),
+            ), // 5.3 compat
+            0
         );
     }
 
@@ -156,12 +144,15 @@ class PHPRedis implements Client {
      */
     public function setPrefix($prefix)
     {
-        $this->client->setOption(\Redis::OPT_PREFIX, $prefix);
+        $this->prefix = $prefix;
     }
 
 
-    public function result($taskId) {
-        $resultKey = 'result.' . $taskId;
+    /**
+     * Retrieve task result.
+     */
+    public function result($taskId, $try = -1) {
+        $resultKey = $this->prefix . 'result.' . $taskId;
 
         $results = $this->client->hgetall($resultKey);
 

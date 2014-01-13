@@ -49,7 +49,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $lua = new Lua;
         $job = $this->getMock('Teeparty\Job');
         $this->assumeClientConnected();
-        $queue = new \Teeparty\Client\PHPRedis($this->client, 'a3d3');
+        $queue = new \Teeparty\Client\PHPRedis($this->client, 'testGet');
         $task = new Task($job, array());
         $msg = json_encode($task->jsonSerialize());
 
@@ -57,13 +57,8 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
             ->method('evalSHA')
             ->with(
                 $this->equalTo($lua->getSha1('task/get')),
-                $this->equalTo(array(
-                    'chanA',
-                    'pending',
-                    'processing',
-                    'worker.a3d3'
-                )),
-                $this->equalTo(4)
+                $this->equalTo(array('', 'chanA', 'testGet')),
+                $this->equalTo(0)
             )
             ->will($this->returnValue($msg));
 
@@ -84,6 +79,7 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
         $lua = new Lua;
         $this->assumeClientConnected();
         $queue = new \Teeparty\Client\PHPRedis($this->client, '23ss');
+        $queue->setPrefix('some_prefix');
 
         $task = new Task($this->getMock('Teeparty\Job'), array());
 
@@ -92,16 +88,16 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
             ->with(
                 $this->equalTo($lua->getSha1('task/put')),
                 $this->equalTo(array(
-                    'foo',
-                    'task.' . $task->getId(),
-                    'pending',
+                    'some_prefix',
+                    'test_put_channel',
+                    $task->getId(),
                     json_encode($task->jsonSerialize())
                 )),
-                $this->equalTo(3)
+                $this->equalTo(0)
             )
             ->will($this->returnValue(true));
 
-        $queue->put($task, 'foo');
+        $queue->put($task, 'test_put_channel');
     }
 
 
@@ -121,12 +117,12 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
                 ->with(
                     $this->equalTo($lua->getSha1('task/put')),
                     $this->equalTo(array(
+                        '',
                         'foo',
-                        'task.' . $task->getId(),
-                        'pending',
+                        $task->getId(),
                         json_encode($task->jsonSerialize())
                     )),
-                    $this->equalTo(3)
+                    $this->equalTo(0)
                 )
                 ->will($this->throwException(new \RedisException('foo')));
 
