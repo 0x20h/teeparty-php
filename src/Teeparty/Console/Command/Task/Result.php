@@ -63,12 +63,12 @@ class Result extends Command {
             $client = $this->container->get('client');
 
             $results = $client->result($taskId);
-            
+
             if (!$results) {
                 $log->error('No results found for ' . $taskId);
                 exit(1);
             }
-            
+
             switch ($format) {
             case 'json':
                 $out = array();
