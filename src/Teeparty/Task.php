@@ -7,7 +7,7 @@ use Teeparty\Schema\Validator;
 
 class Task implements \Serializable, JsonSerializable {
 
-    private static $meta_keys = array('id' ,'created');
+    private static $meta_keys = array('id' ,'created', 'max_tries', 'tries');
     private $job;
     private $context;
     private $meta = array();
@@ -46,6 +46,14 @@ public function __construct(
 
         if (empty($this->meta['created'])) {
             $this->meta['created'] = date('c');
+        }
+
+        if (empty($this->meta['max_tries'])) {
+            $this->meta['max_tries'] = 3;
+        }
+
+        if (empty($this->meta['tries'])) {
+            $this->meta['tries'] = 0;
         }
 
         return $this->meta;
