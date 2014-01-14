@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/0x20h/teeparty-core.git",
-                "reference": "a37d58e19e4da156e8e58040e1cd33f33babf4b4"
+                "reference": "0e2bae47a0acc2eb61083c4b4f07bfc028210fa1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/0x20h/teeparty-core/zipball/a37d58e19e4da156e8e58040e1cd33f33babf4b4",
-                "reference": "a37d58e19e4da156e8e58040e1cd33f33babf4b4",
+                "url": "https://api.github.com/repos/0x20h/teeparty-core/zipball/0e2bae47a0acc2eb61083c4b4f07bfc028210fa1",
+                "reference": "0e2bae47a0acc2eb61083c4b4f07bfc028210fa1",
                 "shasum": ""
             },
             "require": {
@@ -46,7 +46,7 @@
                 "source": "https://github.com/0x20h/teeparty-core/tree/master",
                 "issues": "https://github.com/0x20h/teeparty-core/issues"
             },
-            "time": "2014-01-13 21:49:16"
+            "time": "2014-01-14 09:35:29"
         },
         {
             "name": "justinrainbow/json-schema",
