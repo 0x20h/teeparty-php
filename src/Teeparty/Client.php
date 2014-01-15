@@ -43,6 +43,13 @@ interface Client {
 
 
     /**
+     * Remove the task from the system.
+     *
+     * @param string $taskId The task ID to remove
+     */
+    public function delete($taskId);
+
+    /**
      * Set a global prefix to use for all keys/channels.
      *
      * @param string $prefix A prefix (e.g. `myapp.`).

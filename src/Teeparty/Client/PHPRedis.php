@@ -56,8 +56,9 @@ class PHPRedis implements Client {
      * @return Task A task from on of the provided channels.
      *              null if no Task was available.
      */
-    public function get($channel, $timeout = 2000)
+    public function get($channel, $timeout = 2)
     {
+        $treshold = $timeout * 1E6;
         $now = time();
 
         while(time() < $now + $timeout) {
@@ -78,8 +79,8 @@ class PHPRedis implements Client {
                 }
             }
 
-            $sleep = pow(2, $this->idle++);
-            $backoff = $sleep > $timeout ? $timeout * 1E6 : $sleep * 50000;
+            $sleep = pow(2, $this->idle++) * 50000;
+            $backoff = $sleep > $treshold ? $treshold : $sleep;
             usleep($backoff);
         }
 
@@ -135,10 +136,24 @@ class PHPRedis implements Client {
         );
     }
 
+
+    public function delete($taskId) {
+        $keys = array(
+            $this->prefix . 'task.' . $taskId,
+            $this->prefix . 'result.' . $taskId,
+            $this->prefix . 'result.' . $taskId . '.notify',
+        );
+
+        $rs = $this->client->del($keys);
+        
+        return $rs > 0;
+    }
+
+
     /**
      * Set a global prefix for keys.
      *
-     * A good use case for this is when you have different
+     * A good use case for this is when having different
      * applications on the same redis instance.
      *
      * @param string $prefix Global prefix to use.
@@ -170,6 +185,7 @@ class PHPRedis implements Client {
         ksort($return);
         return $return;
     }
+
 
     /**
      * Register lua scripts.
