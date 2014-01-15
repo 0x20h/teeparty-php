@@ -58,10 +58,9 @@ class PHPRedis implements Client {
      */
     public function get($channel, $timeout = 2)
     {
-        $treshold = $timeout * 1E6;
-        $now = time();
+        $accu = $timeout * 1E6;
 
-        while(time() < $now + $timeout) {
+        while($accu > 0) {
             $item = $this->script(
                 'task/get',
                 array($this->prefix, $channel, $this->workerId),
@@ -79,9 +78,9 @@ class PHPRedis implements Client {
                 }
             }
 
-            $sleep = pow(2, $this->idle++) * 50000;
-            $backoff = $sleep > $treshold ? $treshold : $sleep;
-            usleep($backoff);
+            $backoff = min(pow(2, $this->idle++) * 50000, 2 * 1E6);
+            $accu -= $backoff;
+            usleep($accu < 0 ? $accu + $backoff : $backoff);
         }
 
         return null;
