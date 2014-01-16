@@ -44,10 +44,17 @@ Class TaskFlowTest extends \PHPUnit_Framework_TestCase {
     }
 
 
+    public function tearDown()
+    {
+        $keys = $this->redis->keys($this->prefix. '*');
+        $this->redis->del($keys);
+    }
+
+
     public function testTaskLifecycle()
     {
         $channel = uniqid('integration_tests_');
-        $task1 = new Task(new Job\Test, array('exception' => 1));
+        $task1 = new Task(new Job\Test, array());
         $this->client->put($task1, $channel);
         // lpush task
 
@@ -57,13 +64,33 @@ Class TaskFlowTest extends \PHPUnit_Framework_TestCase {
         // var_dump($task2->meta());
 
         $result = $task2->execute();
-        $this->assertEquals(Result::STATUS_EXCEPTION, $result->getStatus());
+        $this->assertEquals(Result::STATUS_OK, $result->getStatus());
 
         $this->client->ack($result);
         $this->client->delete($task1->getId());
         $this->assertEmpty($this->redis->keys($this->prefix. '*'));
     }
-    
+
+
+    public function testDelayedTaskInsertion()
+    {
+        $channel = uniqid('integration_tests_');
+        $task1 = new Task(new Job\Test, array('exception' => 1));
+        $execution_time = time() + 20;
+        $task_id = $this->client->put($task1, $channel, $execution_time);
+        $this->assertEquals($task1->getId(), $task_id);
+
+        $task2 = $this->client->get($channel, .1);
+        $this->assertNull($task2);
+
+        // check that schedule zset contains the task
+        $tasks = $this->redis->zrangebyscore($this->prefix . 'scheduler',
+            $execution_time, $execution_time);
+
+        $this->assertContains($task_id, $tasks);
+    }
+
+
     /**
      * When there is not item in the queue, get() will block for timeout 
      * seconds, then return null.
