@@ -5,3 +5,4 @@
 /phpunit.xml
 /logs/*
 /teeparty.yml
+/composer.lock
