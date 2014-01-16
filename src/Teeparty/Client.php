@@ -68,4 +68,15 @@ interface Client {
      *                                False if no result found.
      */
     public function result($taskId);
+
+
+    /**
+     * Expire the given task in $timeout seconds. 
+     * 
+     * All task related keys will be removed after the timeout is reached.
+     *
+     * @param string $taskId The task to expire.
+     * @param int $timeout number of seconds until the task expires.
+     */
+    public function expire($taskId, $timeout);
 }

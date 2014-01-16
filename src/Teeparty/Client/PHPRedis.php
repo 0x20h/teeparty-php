@@ -137,7 +137,8 @@ class PHPRedis implements Client {
     }
 
 
-    public function delete($taskId) {
+    public function delete($taskId)
+    {
         $keys = array(
             $this->prefix . 'task.' . $taskId,
             $this->prefix . 'result.' . $taskId,
@@ -167,7 +168,8 @@ class PHPRedis implements Client {
     /**
      * Retrieve task result.
      */
-    public function result($taskId, $try = -1) {
+    public function result($taskId, $try = -1) 
+    {
         $resultKey = $this->prefix . 'result.' . $taskId;
 
         $results = $this->client->hgetall($resultKey);
@@ -184,6 +186,12 @@ class PHPRedis implements Client {
 
         ksort($return);
         return $return;
+    }
+
+
+    public function expire($taskId, $timeout)
+    {
+        throw new Exception('not implemented yet');
     }
 
 
