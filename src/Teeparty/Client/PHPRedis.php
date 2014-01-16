@@ -95,7 +95,7 @@ class PHPRedis implements Client {
      * @return string The id of the added task.
      * @throws Exception if the task could not be added.
      */
-    public function put(Task $task, $channel)
+    public function put(Task $task, $channel, $execution_time = null)
     {
         $msg = json_encode($task->jsonSerialize()); // 5.3 compat
 
@@ -106,7 +106,8 @@ class PHPRedis implements Client {
 
         $this->script(
             'task/put',
-            array($this->prefix, $channel, $task->getId(), $msg),
+            array($this->prefix, $channel, $task->getId(),
+                $msg, $execution_time),
             0
         );
 

@@ -91,7 +91,8 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
                     'some_prefix',
                     'test_put_channel',
                     $task->getId(),
-                    json_encode($task->jsonSerialize())
+                    json_encode($task->jsonSerialize()),
+                    null
                 )),
                 $this->equalTo(0)
             )
@@ -120,7 +121,8 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
                         '',
                         'foo',
                         $task->getId(),
-                        json_encode($task->jsonSerialize())
+                        json_encode($task->jsonSerialize()),
+                        null
                     )),
                     $this->equalTo(0)
                 )

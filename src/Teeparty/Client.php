@@ -28,11 +28,13 @@ interface Client {
      *
      * @param Task $task Task to be processed
      * @param string $channel put task into the given channel.
+     * @param int $execution_time schedule task to be executed at the given unix 
+     *                            timestamp.
      * 
      * @return string The Task ID.
-     * @throws Teeparty\Client\Exception If the Task could not be pushed.
+     * @throws Teeparty\Client\Exception If the Task could not be inserted.
      */
-    public function put(Task $task, $channel);
+    public function put(Task $task, $channel, $execution_time = null);
 
 
     /**
