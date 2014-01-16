@@ -144,13 +144,12 @@ Class PHPRedisTest extends \PHPUnit_Framework_TestCase {
             ->method('multi')
             ->will($this->returnValue($this->client));
 
+
         $this->client->expects($this->any())
-            ->method('script')
-            ->with($this->equalTo('load'))
-            ->will($this->returnValue('foo'));
+            ->method('script');
 
         $this->client->expects($this->once())
             ->method('exec')
-            ->will($this->returnValue(array('foo')));
+            ->will($this->returnValue(array(array(true))));
     }
 }

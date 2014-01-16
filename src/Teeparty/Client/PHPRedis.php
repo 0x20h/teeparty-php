@@ -43,7 +43,9 @@ class PHPRedis implements Client {
         $this->validator = new Validator;
         $this->lua = new Lua;
 
-        $this->registerScripts();
+        if (!$this->scriptsRegistered()) {
+            $this->registerScripts();
+        }
     }
 
 
@@ -204,8 +206,8 @@ class PHPRedis implements Client {
     {
         $scripts = $this->lua->getScripts();
         $multi = $this->client->multi();
-
-        foreach ($scripts as $script) {
+        
+        foreach ($scripts as $key => $script) {
             $multi->script('load', $script);
         }
 
@@ -228,6 +230,30 @@ class PHPRedis implements Client {
     }
 
 
+    /**
+     * Check if the lua scripts are registered in redis.
+     *
+     * @return bool True, if all scripts are registered. False otherwise.
+     */
+    private function scriptsRegistered() {
+        $scripts = $this->lua->getScripts();
+
+        $multi = $this->client->multi();
+
+        foreach ($scripts as $name => $script) {
+            $this->client->script('exists', $this->lua->getSHA1($name));
+        }
+
+        $exists = $multi->exec();
+
+        foreach($exists as $script) {
+            if (!$script[0]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
     /**
      * Run the named lua script.
      *
